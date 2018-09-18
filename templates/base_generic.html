@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% block title %}<title>ASQ - MMNIT's Q&A Forum</title>{% endblock %}
+    {% load static %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'asq_project/base_generic.css' %}">
+</head>
+
+<body>
+    <h2>ASQ - MMNIT's Q&A Forum <hr></h2>
+
+    {% block sidebar %}
+    <!-- insert default navigation text for every page -->
+    {% endblock %}
+
+    {% block content %}
+    <!-- default content text (typically empty) -->
+    {% endblock %}
+
+    <footer><hr>(c) 2018 Team django-unchained Webster 2018 </footer>
+</body>
+
+</html>

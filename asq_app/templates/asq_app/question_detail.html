@@ -1,0 +1,50 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h1>{{ question.title }}</h1>
+<em>by {{ question.author }}</em>
+<p> {{ question.body }}</p>
+
+<ul>
+    {% for answer in question.answers.all %}
+    <li>{{ answer.body }} --<em> {{ answer.upvotes }}</em> <button onclick="upvote_update({{answer.id}})">upvote</button>
+        <em>{{ answer.downvotes }} </em><button onclick="downvote_update({{answer.id}})">downvote</button>
+        <em>{{ answer.author }}</em>
+    </li>
+    {% endfor %}
+</ul>
+<script>
+	
+	function upvote_update(answer_id){
+    $.ajax({
+        url: '/q/upvote_route/',
+        data: {
+          'answer_id':answer_id
+        },
+        dataType: 'json',
+        success: function (data) {
+          if (data) {
+            alert("upvoted success");
+          }
+        }
+      });
+	}
+	function downvote_update(answer_id){
+    $.ajax({
+        url: '/q/downvote_route/',
+        data: {
+          'answer_id':answer_id
+        },
+        dataType: 'json',
+        success: function (data) {
+          if (data) {
+            alert("downvoted success");
+          }
+        }
+      });
+	}
+
+
+</script>
+{% endblock %}

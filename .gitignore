@@ -1,0 +1,17 @@
+# virtual environments
+.myvenv
+.env
+
+.vscode
+
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+media
+
+asq_project/__pycache__
+asq_app/__pycache__
