@@ -5,6 +5,11 @@ from django.views import generic
 
 from .models import Answer, Question
 
+from django.contrib.auth import login, authenticate
+from django.shortcuts import render, redirect
+
+from .forms import SignUpForm
+from . import views
 
 class IndexView(generic.ListView):
     template_name = 'asq_app/index.html'
@@ -35,3 +40,18 @@ def downvoter(request):
 	data = {'status':"success"}
 	return JsonResponse(data)	
 
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            # return reverse('IndexView.as_view()')
+            return redirect('/q/')
+
+    else:
+        form = SignUpForm()
+    return render(request, 'asq_app/signup.html', {'form': form})

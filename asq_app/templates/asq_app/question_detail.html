@@ -8,8 +8,8 @@
 
 <ul>
     {% for answer in question.answers.all %}
-    <li>{{ answer.body }} --<em> {{ answer.upvotes }}</em> <button onclick="upvote_update({{answer.id}})">upvote</button>
-        <em>{{ answer.downvotes }} </em><button onclick="downvote_update({{answer.id}})">downvote</button>
+    <li>{{ answer.body }} --<em> {{ answer.upvotes }}</em> <button onclick="upvote_update({{ answer.id }})">upvote</button>
+        <em>{{ answer.downvotes }} </em><button onclick="downvote_update({{ answer.id}} )">downvote</button>
         <em>{{ answer.author }}</em>
     </li>
     {% endfor %}

@@ -86,7 +86,7 @@ DATABASES = {
         'NAME': 'asqdb',
         'USER': 'user',
         'PASSWORD': '1234',
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': '',
     }
 }

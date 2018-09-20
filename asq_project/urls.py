@@ -19,14 +19,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls import include
 from django.views.generic import RedirectView
-
+from asq_app.views import signup
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
 urlpatterns += [
     path('q/', include('asq_app.urls')),
-    
 ]
 
 urlpatterns += [
@@ -35,6 +34,7 @@ urlpatterns += [
 
 #Add Django site authentication urls (for login, logout, password management)
 urlpatterns += [
+    path(r'accounts/signup/', signup),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
 
