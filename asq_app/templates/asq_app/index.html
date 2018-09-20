@@ -2,10 +2,11 @@
 
 {% block content %}
 
+<a href="{% url 'asq_app:ask' %}">Add Question</a>
 {% if latest_question_list %}
 <ul>
     {% for question in latest_question_list %}
-    <li><a href="{% url 'asq_app:question_detail' question.id question.slug %}">{{ question.title }}</a></li>
+    <li><a href="{% url 'asq_app:question_detail' question.slug %}">{{ question.title }}</a></li>
     {% endfor %}
 </ul>
 {% else %}

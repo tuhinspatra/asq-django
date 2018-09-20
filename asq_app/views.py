@@ -1,8 +1,8 @@
 from django.http import HttpResponseRedirect,JsonResponse, HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render,redirect
 from django.urls import reverse
 from django.views import generic
-
+from .forms import AskForm ,AnsForm
 from .models import Answer, Question
 
 from django.contrib.auth import login, authenticate
@@ -17,28 +17,63 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five published questions."""
-        return Question.objects.order_by('-created_on')[:5]
+        return Question.objects.order_by('-created_on')
 
 
-class DetailView(generic.DetailView):
-    model = Question
-    template_name = 'asq_app/question_detail.html'
+def detail(request,slug):
+    qdata=Question.objects.get(slug=slug)
+    if request.method == 'POST':
+
+        ansform = AnsForm(request.POST)
+        if ansform.is_valid():
+            instance = ansform.save(commit=False)
+            instance.author = request.user
+            instance.question = qdata
+            instance.save()
+            return render(request,'asq_app/question_detail.html',{'qdata':qdata,'ansform':ansform})
+    else:
+        ansform=AnsForm()
+    return render(request,'asq_app/question_detail.html',{'qdata':qdata,'ansform':ansform})
+
+def askForm(request):
+    	if request.method == 'POST':
+    		askform = AskForm(request.POST)
+    		if askform.is_valid():
+    			instance = askform.save(commit=False)
+    			instance.author = request.user
+    			instance.save()
+    			return redirect('/')
+    	else:
+    		askform = AskForm()
+    	return render(request,'asq_app/askform.html',{'askform':askform})
+
+def ansForm(request):
+        if request.method == 'POST':
+            ansform = AnsForm(request.POST)
+            if ansform.is_valid():
+                instance = ansform.save(commit=False)
+                instance.author = request.user
+                instance.save()
+                return redirect('/')
+        else:
+            ansform = AnsForm()
+        return render(request,'asq_app/ansform.html',{'ansform':ansform})
 
 def upvoter(request):
 	answer_id = request.GET.get('answer_id')
 	answer = Answer.objects.get(pk=answer_id)
 	answer.upvotes += 1;
 	answer.save()
-	data = {'status':"success"}
-	return JsonResponse(data)
+	qdata = {'votes':answer.upvotes}
+	return JsonResponse(qdata)
 
 def downvoter(request):
 	answer_id = request.GET.get('answer_id')
 	answer = Answer.objects.get(pk=answer_id)
 	answer.downvotes += 1;
 	answer.save()
-	data = {'status':"success"}
-	return JsonResponse(data)	
+	ansdata = {'votes':answer.downvotes}
+	return JsonResponse(ansdata)	
 
 def signup(request):
     if request.method == 'POST':

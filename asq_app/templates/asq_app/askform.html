@@ -1,0 +1,10 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+   <form action="{% url 'asq_app:ask' %}" method="post" >
+   	{% csrf_token %}
+   {{askform}}
+   <button type="submit" >Submit</button>
+   </form>
+    <!-- default content text (typically empty) -->
+{% endblock %}
