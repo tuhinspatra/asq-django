@@ -30,6 +30,7 @@ def detail(request,slug):
             instance.author = request.user
             instance.question = qdata
             instance.save()
+
             return render(request,'asq_app/question_detail.html',{'qdata':qdata,'ansform':ansform})
     else:
         ansform=AnsForm()
@@ -78,6 +79,7 @@ def downvoter(request):
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
+        
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')

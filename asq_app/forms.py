@@ -14,6 +14,11 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
 
+    def clean_email(self):
+        emaill=self.cleaned_data['email']
+        if User.objects.filter(email=emaill).count()!=0:
+            raise forms.ValidationError('a user with this email id already exist!!!')
+
 class AskForm(ModelForm):
 	class Meta:
 		model=Question
