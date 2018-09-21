@@ -19,12 +19,15 @@ def detail(request,slug):
     qdata=Question.objects.get(slug=slug)
     if request.method == 'POST':
         ansform = AnsForm(request.POST)
-        if ansform.is_valid() and request.POST['body']:
+        if ansform.is_valid():
             instance = ansform.save(commit=False)
             instance.author = request.user
             instance.question = qdata
             instance.save()
-            return render(request,'asq_app/question_detail.html',{'qdata':qdata,'ansform':ansform})
+            ansform = AnsForm()
+            #url=qdata.get_abolute_url()
+            return HttpResponseRedirect(request.path)
+            #return render(request,'asq_app/question_detail.html',{'qdata':qdata,'ansform':ansform})
     else:
         ansform=AnsForm()
     return render(request,'asq_app/question_detail.html',{'qdata':qdata,'ansform':ansform})
