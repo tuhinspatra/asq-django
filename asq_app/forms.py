@@ -10,4 +10,5 @@ class AnsForm(ModelForm):
 	class Meta:
 		model=Answer
 		fields=['body']
+		
 

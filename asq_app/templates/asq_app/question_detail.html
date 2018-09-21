@@ -8,8 +8,8 @@
 
 <ul>
     {% for answer in qdata.answers.all %}
-    <li>{{ answer.body }} --<em id="up{{answer.id}}"> {{ answer.upvotes }}</em> <button onclick="upvote_update({{answer.id}})">upvote</button>
-        <em id="down{{answer.id}}">{{ answer.downvotes }} </em ><button onclick="downvote_update({{answer.id}})">downvote</button>
+    <li>{{ answer.body }} --<em id="up{{answer.id}}"> {{ answer.upvotes }}</em> <button onclick="upvote_update({{answer.id}},{{qdata.id}})">upvote</button>
+        <em id="down{{answer.id}}">{{ answer.downvotes }} </em ><button onclick="downvote_update({{answer.id}},{{qdata.id}})">downvote</button>
         <em>{{ answer.author }}</em>
     </li>
     {% endfor %}
@@ -17,41 +17,44 @@
 <form  method="post" >
     {% csrf_token %}
    {{ansform}}
-   <button type="submit" >Submit</button>
+   <button type="submit" onsubmit="clear_body()">Submit</button>
    </form>
 <script>
-	
-	function upvote_update(answer_id){
+	function upvote_update(answer_id,question_id){
     var btn = $("#up"+answer_id);
 
     $.ajax({
         url: '/q/upvote_route/',
         data: {
-          'answer_id':answer_id
+          'answer_id':answer_id,
+          'question_id':question_id
         },
         dataType: 'json',
         success: function (data) {
-          if (data) {
-            btn.text(data.votes);
+          if (data.vote) {
+            alert(data.vote);
             //alert("upvoted success"+btn.val());
-          }
+          }else if(data.votes)
+           btn.text(data.votes);
         }
       });
 	}
-	function downvote_update(answer_id){
+	function downvote_update(answer_id,question_id){
     var btn = $("#down"+answer_id);
 
     $.ajax({
         url: '/q/downvote_route/',
         data: {
-          'answer_id':answer_id
+          'answer_id':answer_id,
+          'question_id':question_id
         },
         dataType: 'json',
         success: function (data) {
-          if (data) {
-            btn.text(data.votes);
-           
-          }
+          if (data.vote) {
+            alert(data.vote);
+            //alert("upvoted success"+btn.val());
+          }else if(data.votes)
+           btn.text(data.votes);
         }
       });
 	}
