@@ -13,4 +13,32 @@
 <p>No Questions are available.</p>
 {% endif %}
 
+<input id="tag" type="text" placeholder="enter tag" />
+<button onclick="tag_fliter()" >submit</button>
+<div id="tag_fliter_content"></div>
+<script>
+function tag_fliter(){
+    var tag= $("#tag").val();
+    $.ajax({
+        url: '/q/tag_route/',
+        data: {
+          'tag':tag
+        },
+        dataType: 'json',
+        success: function (data) {
+        	if(data.question.length == 0){
+        		txt="No Question Found";
+        	}
+          else if (data){
+          	txt=""
+          	for(var i=0;i<(data.question).length;i++)
+          		txt+="<a href="+data.question[i]+">"+data.question_title[i]+"</a><br>"
+          }
+          	$("#tag_fliter_content").html("<p>"+txt+"</p>")
+           
+       
+   }
+      });
+	}
+</script>
 {% endblock %}
