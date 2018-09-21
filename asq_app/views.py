@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render,redirect
 from django.urls import reverse
 from django.views import generic
 from .forms import AskForm ,AnsForm
-from .models import Answer, Question
+from .models import Answer, Question,UserVoteDetail
 
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
@@ -23,15 +23,16 @@ class IndexView(generic.ListView):
 def detail(request,slug):
     qdata=Question.objects.get(slug=slug)
     if request.method == 'POST':
-
         ansform = AnsForm(request.POST)
         if ansform.is_valid():
             instance = ansform.save(commit=False)
             instance.author = request.user
             instance.question = qdata
             instance.save()
-
-            return render(request,'asq_app/question_detail.html',{'qdata':qdata,'ansform':ansform})
+            ansform = AnsForm()
+            #url=qdata.get_abolute_url()
+            return HttpResponseRedirect(request.path)
+            #return render(request,'asq_app/question_detail.html',{'qdata':qdata,'ansform':ansform})
     else:
         ansform=AnsForm()
     return render(request,'asq_app/question_detail.html',{'qdata':qdata,'ansform':ansform})
@@ -60,21 +61,42 @@ def ansForm(request):
             ansform = AnsForm()
         return render(request,'asq_app/ansform.html',{'ansform':ansform})
 
+
 def upvoter(request):
-	answer_id = request.GET.get('answer_id')
-	answer = Answer.objects.get(pk=answer_id)
-	answer.upvotes += 1;
-	answer.save()
-	qdata = {'votes':answer.upvotes}
-	return JsonResponse(qdata)
+    answer_id = request.GET.get('answer_id')
+    question_id = request.GET.get('question_id')
+    try:
+        answer = Answer.objects.get(pk=answer_id)
+        question = Question.objects.get(pk=question_id)
+        status = UserVoteDetail.objects.get(answer=answer_id,question=question_id,user=request.user)
+    except UserVoteDetail.DoesNotExist:
+        status=None             
+    if status != None:
+        qdata = {'vote':"already voted"}
+    else:
+        answer.upvotes += 1;
+        UserVoteDetail.objects.create(answer=answer_id,question=question_id,user=request.user)
+        answer.save()
+        qdata = {'votes':answer.upvotes}
+    return JsonResponse(qdata)
 
 def downvoter(request):
-	answer_id = request.GET.get('answer_id')
-	answer = Answer.objects.get(pk=answer_id)
-	answer.downvotes += 1;
-	answer.save()
-	ansdata = {'votes':answer.downvotes}
-	return JsonResponse(ansdata)	
+    answer_id = request.GET.get('answer_id')
+    question_id = request.GET.get('question_id')
+    try:
+        answer = Answer.objects.get(pk=answer_id)
+        question = Question.objects.get(pk=question_id)
+        status = UserVoteDetail.objects.get(answer=answer_id,question=question_id,user=request.user)
+    except UserVoteDetail.DoesNotExist:
+        status=None             
+    if status != None:
+        qdata = {'vote':"already voted"}
+    else:
+        answer.downvotes += 1;
+        UserVoteDetail.objects.create(answer=answer_id,question=question_id,user=request.user)
+        answer.save()
+        qdata = {'votes':answer.downsvotes}
+    return JsonResponse(qdata)	
 
 def signup(request):
     if request.method == 'POST':

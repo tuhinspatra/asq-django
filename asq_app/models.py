@@ -67,4 +67,8 @@ class Answer(models.Model):
         self.last_modified_on = timezone.now()
         super().save(*args, **kwargs)
 
+class UserVoteDetail(models.Model):
+    user = models.ForeignKey('auth.User',on_delete=models.CASCADE)
+    question = models.IntegerField(default=0)
+    answer = models.IntegerField(default=0) 
     

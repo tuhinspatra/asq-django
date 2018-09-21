@@ -1,22 +1,9 @@
 from django.contrib import admin
-
-from .models import Question, Answer
+from django.contrib.auth.models import User
+from .models import Question, Answer ,UserVoteDetail
 # Register your models here.
 
-
-class AnswerInline(admin.TabularInline):
-    model = Answer
-    extra = 1
-
-
-class QuestionAdmin(admin.ModelAdmin):
-    list_filter = ['created_on']
-    search_fields = ['title']
-    fieldsets = [
-        (None,               {'fields': ['title', 'author', 'slug', 'body']},),
-    ]
-    inlines = [AnswerInline]
-    list_display = ('title', 'created_on')
-
-
-admin.site.register(Question, QuestionAdmin)
+admin.site.register(Question)
+admin.site.register(Answer)
+admin.site.register(UserVoteDetail)
+#admin.site.register(User)
