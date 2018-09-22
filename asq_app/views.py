@@ -3,11 +3,11 @@ from django.shortcuts import get_object_or_404, render,redirect
 from django.urls import reverse
 from django.views import generic
 from .forms import AskForm ,AnsForm,CommentForm
-from .models import Answer, Question,UserVoteDetail,QComment,TagSearch
-
+from .models import Answer, Question,UserVoteDetail,QComment,TagSearch,Notification
+import json
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
-
+from django.core import serializers
 from .forms import SignUpForm
 from . import views
 
@@ -23,7 +23,6 @@ class IndexView(generic.ListView):
 def detail(request,slug):
     qdata=Question.objects.get(slug=slug)
     tag_list=(qdata.tag).split(",")
-    print(tag_list)
     if request.method == 'POST':
         ansform = AnsForm(request.POST)
         commentform = CommentForm(request.POST)
@@ -32,6 +31,8 @@ def detail(request,slug):
             instance.author = request.user
             instance.question = qdata
             instance.save()
+            question = Question.objects.filter(id=qdata.id)
+            Notification.objects.create(received_by=question.author,created_by=request.user,question=question,isans=True,answer=instance,new_notification=True)
             #ansform = AnsForm()
             #url=qdata.get_abolute_url()
             return HttpResponseRedirect(request.path)
@@ -40,6 +41,8 @@ def detail(request,slug):
             instance.author = request.user
             instance.question = qdata
             instance.save()
+            question = Question.objects.get(id=qdata.id)
+            Notification.objects.create(received_by=question.author,created_by=request.user,question=question,iscomment=True,comment=instance,new_notification=True)
             #ansform = AnsForm()
             #url=qdata.get_abolute_url()
             return HttpResponseRedirect(request.path)    
@@ -178,3 +181,20 @@ def user_dashboard(request):
     'comment':comment
     }
     return render(request,'asq_app/user_dashboard.html',data)    
+
+
+
+def notification_updates(request):
+    notification = []
+    try:
+        
+        for notify in Notification.objects.filter(received_by=request.user,new_notification=True):
+            notification.append(notify.question) 
+            print(notify)
+    except Notification.DoesNotExist:
+        notification = []
+    print(notification)    
+    #data = {notification:notification}
+    notify_serialized = serializers.serialize('json',notification)
+
+    return JsonResponse(notify_serialized,safe=False)            
