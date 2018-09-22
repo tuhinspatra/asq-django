@@ -6,21 +6,48 @@
 <em>by {{ qdata.author }}</em>
 <p> {{ qdata.body }}</p>
 
-<ul>
-    {% for answer in qdata.answers.all %}
-    <li>{{ answer.body }} --<em id="up{{answer.id}}"> {{ answer.upvotes }}</em> <button onclick="upvote_update({{answer.id}},{{qdata.id}})">upvote</button>
-        <em id="down{{answer.id}}">{{ answer.downvotes }} </em ><button onclick="downvote_update({{answer.id}},{{qdata.id}})">downvote</button>
+<!-- list of answers -->
+
+{% if user.is_authenticated %}
+    <ul>
+        {% for answer in qdata.answers.all %}
+        <li>{{ answer.body }} --<em id="up{{answer.id}}"> {{ answer.upvotes }}</em> <button onclick="upvote_update({{answer.id}},{{qdata.id}})">upvote</button>
+            <em id="down{{answer.id}}">{{ answer.downvotes }} </em ><button onclick="downvote_update({{answer.id}},{{qdata.id}})">downvote</button>
+            <em>{{ answer.author }}</em>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <ul>
+      {% for answer in qdata.answers.all %}
+      <li>{{ answer.body }} --<em id="up{{answer.id}}"> {{ answer.upvotes }}</em> 
+        <button onclick="alert('you are not logged in. login to Upvote')">upvote</button>
+        <em id="down{{answer.id}}">{{ answer.downvotes }} </em >
+        <button onclick="alert('you are not logged in. login to Downvote')">downvote</button>
         <em>{{ answer.author }}</em>
-    </li>
-    {% endfor %}
+      </li>
+  {% endfor %}
 </ul>
-<form  method="post" >
-    {% csrf_token %}
-   {{ansform}}
-   <button type="submit" onsubmit="clear_body()">Submit</button>
-   </form>
+{% endif %}
+
+<!-- answer submission form -->
+{% if user.is_authenticated%}
+    <form  method="post" >
+        {% csrf_token %}
+      {{ansform}}
+      <button type="submit" onsubmit="clear_body()">Submit</button>
+    </form>
+{% else %}
+    <form  method="post" >
+      {% csrf_token %}
+    {{ansform}}
+    </form>
+    <button onclick="alert('you are not logged in. login to submit the answer')">Submit</button>
+{% endif %}
+<!-- upvote downvote ajax functions -->
 <script>
 	function upvote_update(answer_id,question_id){
+    
     var btn = $("#up"+answer_id);
 
     $.ajax({
@@ -58,7 +85,5 @@
         }
       });
 	}
-
-
 </script>
 {% endblock %}

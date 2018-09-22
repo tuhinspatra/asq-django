@@ -1,10 +1,37 @@
 {% extends "base_generic.html" %}
 
+
 {% block content %}
+
+<script>
+    $(function(){
+        $('#tags').tagInput({
+            labelClass:"badge badge-success"
+        });
+    });
+
+    function addtags()
+    {
+        $("#id_tags").val($("#resultid").val());
+    }
+</script>
+
    <form action="{% url 'asq_app:ask' %}" method="post" >
    	{% csrf_token %}
-   {{askform}}
+    {% for field in askform %}
+        {% if field.name == 'tags' %}
+            {{field}}
+        {% else %}
+            {{ field.label }}
+            {{ field }}
+        {% endif %} 
+    {% endfor %}       
    <button type="submit" >Submit</button>
    </form>
+
+   <div class="form-control tags" id="tags">
+        <input type="text" onfocusout="addtags()" class="labelinput">
+        <input type="hidden" id="resultid" value="" name="result">
+    </div>
     <!-- default content text (typically empty) -->
 {% endblock %}

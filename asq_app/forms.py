@@ -20,13 +20,16 @@ class SignUpForm(UserCreationForm):
             raise forms.ValidationError('a user with this email id already exist!!!')
 
 class AskForm(ModelForm):
-	class Meta:
-		model=Question
-		fields=['title','slug','body',]
+    class Meta:
+        model=Question
+        widgets = {'tags': forms.HiddenInput,}
+        fields=['title','slug','body','tags']
+
+    # def __init__(self,*args,**kwargs):
+    #     super().__init__(*args,**kwargs)
+    #     self.fields['result'].widget.attrs.update({'name':'result'})
 
 class AnsForm(ModelForm):
 	class Meta:
 		model=Answer
 		fields=['body']
-		
-

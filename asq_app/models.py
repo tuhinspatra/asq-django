@@ -2,7 +2,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 from django.utils import timezone
-
+from django import forms
 
 # Create your models here.
 
@@ -11,6 +11,8 @@ class Question(models.Model):
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     title = models.CharField('title', max_length=255)
     slug = models.SlugField(unique=True, max_length=255)
+    # tags = models.CharField('tags',widget=forms.TextInput(attrs={'type':'text','class':'labelinput'}),max_length=1000)
+    tags = models.CharField('tags',max_length=1000,default='')
     body = models.TextField('body', max_length=5000)
     upvotes = models.IntegerField(default=0)
     downvotes = models.IntegerField(default=0)

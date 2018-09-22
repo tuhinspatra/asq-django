@@ -20,6 +20,8 @@ from django.conf.urls.static import static
 from django.conf.urls import include
 from django.views.generic import RedirectView
 from asq_app.views import signup
+
+app_name = 'asq_project'
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]

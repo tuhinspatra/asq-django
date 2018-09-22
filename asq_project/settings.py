@@ -139,6 +139,7 @@ STATICFILES_DIRS = [
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/q/'
-
+#Redirect to home URL after logout 
+LOGOUT_REDIRECT_URL = '/q/'
 # Log email reset mail on console. Can't send email yet as server is not configured.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
