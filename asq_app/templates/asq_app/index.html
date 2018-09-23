@@ -6,25 +6,93 @@
 {% else %}
     <a href="{% url 'asq_app:ask' %}">Add Question</a>
 {% endif %} -->
-<form action="/search" method="get">
+<!-- <form action="/search" method="get">
     <input name="q" type="text" />
     <input type="submit" />
-</form>
+</form> -->
+{% load static %}
+<script src="{% static 'vendor/jquery.tagcanvas.min.js' %}"></script>
 
-{% if user.is_authenticated %}
-<a href="{% url 'asq_app:ask' %}">Add Question</a>
-{% else %}
-<a href="/accounts/login">Add Question</a>
-{% endif %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (!$('#myCanvas').tagcanvas({
+            textColour: '#ff0000',
+            outlineColour: '#ff00ff',
+            reverse: true,
+            depth: 0.8,
+            maxSpeed: 0.05,
+            weight: true,
+            weightedMode: 'both',
+            weightSize: 0.6,
+        }, 'tags')) {
+            // something went wrong, hide the canvas container
+            $('#myCanvasContainer').hide();
+        }
+    });
+</script>
+
+
+<div id="myCanvasContainer">
+    <canvas width="400" height="700" id="myCanvas">
+        <p>Anything in here will be replaced on browsers that support the canvas element</p>
+    </canvas>
+</div>
+<div id="tags">
+    <ul>
+        <li><a href="#" data-weight="14" style="font-size: 2.83ex">1000</a></li>
+        <li><a href="#" data-weight="18" style="font-size: 3.61ex">background</a></li>
+        <li><a href="#" data-weight="40" style="font-size: 9.64ex">canvas</a></li>
+        <li><a href="#" data-weight="22" style="font-size: 4.47ex">chart</a></li>
+        <li><a href="#" data-weight="18" style="font-size: 3.46ex">charts</a></li>
+        <li><a href="#" data-weight="60" style="font-size: 12.32ex">cloud</a></li>
+        <li><a href="#" data-weight="18" style="font-size: 3.74ex">clouds</a></li>
+        <li><a href="#" data-weight="17" style="font-size: 3.16ex">example</a></li>
+        <li><a href="#" data-weight="18" style="font-size: 3.74ex">goat</a></li>
+        <li><a href="#" data-weight="17" style="font-size: 3.16ex">goat1000</a></li>
+        <li><a href="#" data-weight="30" style="font-size: 8.36ex">graph</a></li>
+        <li><a href="#" data-weight="21" style="font-size: 4.36ex">graphs</a></li>
+        <li><a href="#" data-weight="17" style="font-size: 3.32ex">html</a></li>
+        <li><a href="#" data-weight="50" style="font-size: 10.68ex">html5</a></li>
+        <li><a href="#" data-weight="23" style="font-size: 4.69ex">image</a></li>
+        <li><a href="#" data-weight="24" style="font-size: 4.8ex">javascript</a></li>
+        <li><a href="#" data-weight="26" style="font-size: 5.47ex">jpeg</a></li>
+        <li><a href="#" data-weight="13" style="font-size: 2.65ex">jpegsaver</a></li>
+        <li><a href="#" data-weight="32" style="font-size: 8.77ex">jquery</a></li>
+    </ul>
+</div>
+
+
 
 {% if latest_question_list %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-6"><h4 class="my-4">Latest Questions</h4 ></div>
+                    <div class="col-md-6">
+                        {% if user.is_authenticated %}
+                            <button type="button" class="btn btn-primary active" onclick="changePage()">Add Question</button>
+                        {% else %}
+                            <button type="button" class="btn btn-primary disabled">Add Question</button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% for question in latest_question_list %}
+                <div class="card mb-4">
+                    <!-- <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap"> -->
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="{% url 'asq_app:question_detail' question.slug %}">{{ question.title }}</a></h5>
+                        <!-- <br> -->
+                        modified on {{ question.created_on }}
+                        <span class="glyphicon glyphicon-user"></span> by {{ question.author.username }}
+                        <span class="glyphicon glyphicon-pen"></span> {{ question.answers.all.count }} answers
+                    </div>
+                </div>
+                {% endfor %}
 
-<ul class="list-group" >
-    {% for question in latest_question_list %}
-    <li class="list-group-item" ><a  href="{% url 'asq_app:question_detail' question.slug %}">{{ question.title }}</a><span class="badge" >author-{{question.author}} answer  count-{{question.answers.all.count}} comment count - {{question.comments.all.count}}</span>
-  </li><br>
-    {% endfor %}
-</ul>
+            </div>
+        </div>
+    </div>
 {% else %}
 <p>No Questions are available.</p>
 {% endif %}
@@ -32,6 +100,8 @@
 <input id="tag" type="text" placeholder="enter tag" />
 <button onclick="tag_fliter()" >submit</button>
 <div id="tag_fliter_content"></div>
+
+
 <script>
 function tag_fliter(){
     var tag= $("#tag").val();
@@ -55,6 +125,13 @@ function tag_fliter(){
        
    }
       });
-	}
+    }
+    
+
+    function changePage(){
+        window.location="/q/ask/";
+    }
 </script>
+
+
 {% endblock %}

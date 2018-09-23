@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'asq_app.apps.AsqAppConfig',
     'froala_editor',
+    'haystack',
 ]
 
 MIDDLEWARE = [
