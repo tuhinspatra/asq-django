@@ -22,12 +22,14 @@ from django.views.generic import RedirectView
 from asq_app.views import signup
 
 app_name = 'asq_project'
+from asq_app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
 urlpatterns += [
     path('q/', include('asq_app.urls')),
+    path('u/',views.user_dashboard,name='user_dashboard'),
 ]
 
 urlpatterns += [
@@ -36,7 +38,7 @@ urlpatterns += [
 
 #Add Django site authentication urls (for login, logout, password management)
 urlpatterns += [
-    path(r'accounts/signup/', signup),
+    path(r'accounts/signup/', views.signup),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
 

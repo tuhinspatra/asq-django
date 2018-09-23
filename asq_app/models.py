@@ -7,7 +7,6 @@ from django import forms
 # Create your models here.
 
 class Question(models.Model):
-
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     title = models.CharField('title', max_length=255)
     slug = models.SlugField(unique=True, max_length=255)
@@ -72,5 +71,52 @@ class Answer(models.Model):
 class UserVoteDetail(models.Model):
     user = models.ForeignKey('auth.User',on_delete=models.CASCADE)
     question = models.IntegerField(default=0)
-    answer = models.IntegerField(default=0) 
+    answer = models.IntegerField(default=0)
+    upvote = models.BooleanField(default = False)
+    downvote = models.BooleanField( default = False)
+
+    def __str__(self):
+        return self.user
+
+class QComment(models.Model):
+    author = models.ForeignKey('auth.User',on_delete=models.CASCADE)
+    question = models.ForeignKey('Question',on_delete = models.CASCADE,related_name = 'comments')
+    commentbody = models.TextField(max_length = 5000)
+
     
+
+class UserDashBoard(models.Model):
+    user = models.ForeignKey('auth.User',on_delete = models.CASCADE)
+    question = models.IntegerField(default = 0)
+    answer = models.IntegerField(default=0)
+    comment = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.user
+
+
+class TagSearch(models.Model):
+    tag = models.CharField(blank=False,max_length=250)
+    question_id = models.IntegerField(blank=True)
+    question_slug = models.SlugField(max_length=255)
+    question_title = models.CharField(max_length=200,default="untitle question")
+    def __str__(self):
+        return self.tag
+
+
+class Notification(models.Model):
+    created_by = models.ForeignKey('auth.User',on_delete=models.CASCADE,related_name='created_by') 
+    received_by = models.ForeignKey('auth.User',on_delete=models.CASCADE,related_name='received_by')
+    question = models.ForeignKey('Question',on_delete=models.CASCADE,null=True,blank=True)
+    answer = models.ForeignKey('Answer',on_delete=models.CASCADE,null=True,blank=True)
+    comment = models.ForeignKey('QComment',on_delete=models.CASCADE,null=True,blank=True)
+    isans = models.BooleanField(default=False)
+    iscomment = models.BooleanField(default=False)
+    new_notification = models.BooleanField(default=False)
+    def __str__(self):
+        if not self.question:
+            return "hello"
+        elif self.isans == True:
+            return self.created_by.get_username()+" answered on "+self.question.title
+        elif self.iscomment == True:
+            return self.created_by.get_username()+" commented on "+self.question.title

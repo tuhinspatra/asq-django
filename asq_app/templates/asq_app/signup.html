@@ -1,6 +1,13 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+  {% if user.is_authenticated %}
+      <script>
+        alert("you are already logged in!!");
+        window.location="/q/";
+      </script>
+  {% endif %}
+
   <h2>Sign up</h2>
   <form method="post">
     {% csrf_token %}

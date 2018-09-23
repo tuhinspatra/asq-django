@@ -24,7 +24,22 @@
     {% endif %}
     <hr>
 
-    {% block sidebar %}
+    {% if user.is_authenticated %}
+    <button onclick="get_new_notification()">notification</button>
+    {% else %}
+    <button onclick="alert('login to see notifications!')">notification</button>
+    {% endif %}
+    <div id="notification"></div>
+
+    {% if user.is_authenticated %}
+    <a href="/u">see dashboard</a> 
+    {% else %}
+    <a href="/accounts/login">see dashboard</a>
+    {% endif %}
+    
+
+    <hr>
+     {% block sidebar %}
     <!-- insert default navigation text for every page -->
     {% endblock %}
 
@@ -33,6 +48,30 @@
     {% endblock %}
 
     <footer><hr>(c) 2018 Team django-unchained Webster 2018 </footer>
+  
+  <script>
+function get_new_notification(){
+    var tag= $("#tag").val();
+    $.ajax({
+        url: '/q/notification_route/',
+        data: {
+        },
+        dataType: 'json',
+        success: function (data) {
+            if(data){
+              received_data=JSON.parse(data);
+               console.log(JSON.parse(data)[0]);
+               for(var i=0;i<data.length;i++)
+               $("#notification").append("<a href="+'/q/'+received_data[i].fields.slug+">"+received_data[i].fields.title+"</a><br>");
+               ///alert("new notification received");
+               }
+       
+   }
+      });
+    }
+</script>
+
+
 </body>
 
 </html>

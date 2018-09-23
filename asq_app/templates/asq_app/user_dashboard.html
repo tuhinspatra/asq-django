@@ -1,0 +1,18 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>question asked</h1>
+{% for q in question %}
+<h5><a href="{% url 'asq_app:question_detail' q.slug %}">{{q.title}}</a></h5>
+{% endfor %}
+
+<h1>Answer given</h1>
+{% for ans in answer %}
+<h5>{{ans.body}}</h5>
+{% endfor %}
+<h1>Comment </h1>
+{% for c in comment %}
+<h5>sd{{c.commentbody}}</h5>
+{% endfor %}
+
+{% endblock %}

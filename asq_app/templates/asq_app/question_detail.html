@@ -2,9 +2,23 @@
 
 {% block content %}
 
-<h1>{{ qdata.title }}</h1>
-<em>by {{ qdata.author }}</em>
-<p> {{ qdata.body }}</p>
+<h1>title{{ qdata.title }}</h1>
+<em>by -{{ qdata.author }}</em>
+<p> tag--{{ qdata.tags }}</p>
+<p> body--{{ qdata.body }}</p>
+<h1>comments</h1>
+{% for comment in qdata.comments.all %}
+       <p>{{comment.commentbody}}</p>
+       <kbd>{{comment.author}}</kbd>
+    {% endfor %}
+
+
+<form  method="post" >
+    {% csrf_token %}
+   {{commentform}}
+   <button type="submit" >Submit</button>
+   </form>
+<h1>answers</h1>
 
 <!-- list of answers -->
 
@@ -58,10 +72,7 @@
         },
         dataType: 'json',
         success: function (data) {
-          if (data.vote) {
-            alert(data.vote);
-            //alert("upvoted success"+btn.val());
-          }else if(data.votes)
+          if (data)
            btn.text(data.votes);
         }
       });
@@ -77,10 +88,7 @@
         },
         dataType: 'json',
         success: function (data) {
-          if (data.vote) {
-            alert(data.vote);
-            //alert("upvoted success"+btn.val());
-          }else if(data.votes)
+          if (data)
            btn.text(data.votes);
         }
       });
