@@ -194,10 +194,10 @@ def notification_updates(request):
         
         for notify in Notification.objects.filter(received_by=request.user,new_notification=True):
             notification.append(notify.question) 
-            print(notify)
+            # print(notify)
     except Notification.DoesNotExist:
         notification = []
-    print(notification)    
+    # print(notification)    
     #data = {notification:notification}
     notify_serialized = serializers.serialize('json',notification)
 
@@ -221,8 +221,12 @@ class CustomContain(BaseInput):
 def search_titles(request):
     query = request.GET.get('q', '')
     sqs = SearchQuerySet()
-    r2 = SearchQuerySet().filter(content=CustomContain(query))
+    results_custom = SearchQuerySet().filter(content=CustomContain(query))
     # r2 = SearchQuerySet().filter(content=query)
     results = SearchQuerySet().autocomplete(content_auto=query)
     spelling = sqs.spelling_suggestion(query)
-    return render_to_response('search/search.html', {'qu': query, 'r2': r2, 'results': results, 'suggest': spelling})
+    results = serializers.serialize('json',results)
+    results_custom = serializers.serialize('json',results_custom)
+
+    # print(results)
+    return JsonResponse({'results': results, 'results_custom': results_custom})
