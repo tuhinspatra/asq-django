@@ -37,7 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'haystack',
     'asq_app.apps.AsqAppConfig',
+    'froala_editor'
+
 ]
 
 MIDDLEWARE = [
@@ -141,5 +144,8 @@ STATICFILES_DIRS = [
 LOGIN_REDIRECT_URL = '/q/'
 #Redirect to home URL after logout 
 LOGOUT_REDIRECT_URL = '/q/'
+MEDIA_ROOT = 'media/'
+FROALA_UPLOAD_PATH = 'froala_uploads/'
+MEDIA_URL = '/media/'
 # Log email reset mail on console. Can't send email yet as server is not configured.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
