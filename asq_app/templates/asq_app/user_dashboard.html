@@ -8,7 +8,7 @@
 
 <h1>Answer given</h1>
 {% for ans in answer %}
-<h5>{{ans.body}}</h5>
+<h5>{{ans.body | safe }}</h5>
 {% endfor %}
 <h1>Comment </h1>
 {% for c in comment %}

@@ -45,7 +45,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="#">Asq Mnnit</a>
+        <a class="navbar-brand" href="/q">Asq Mnnit</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -58,7 +58,7 @@
             </li>
             {% if user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link">Notifications</button></a>
+              <a class="nav-link" data-toggle="modal" data-target="#myModal" onmouseover="get_new_notification()" style="cursor: pointer;">Notifications</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/u">{{ user.username }}!</a>
@@ -81,33 +81,6 @@
         </div>
       </div>
     </nav>
-
-    <h2>ASQ - MMNIT's Q&A Forum </h2>
-    <!-- <br> -->
-    {% if user.is_authenticated %}
-    Hi {{ user.username }}!
-    <p><a href="{% url 'logout' %}">logout</a></p>
-    {% else %}
-    <p>You are not logged in</p>
-    <a href="{% url 'login' %}">login</a>
-    {% endif %}
-    <hr>
-
-    {% if user.is_authenticated %}
-    <button onclick="get_new_notification()">notification</button>
-    {% else %}
-    <button onclick="alert('login to see notifications!')">notification</button>
-    {% endif %}
-    <div id="notification"></div>
-
-    {% if user.is_authenticated %}
-    <a href="/u">see dashboard</a> 
-    {% else %}
-    <a href="/accounts/login">see dashboard</a>
-    {% endif %}
-    
-
-    <hr>
      {% block sidebar %}
     <!-- insert default navigation text for every page -->
     {% endblock %}
@@ -116,8 +89,32 @@
     <!-- default content text (typically empty) -->
     {% endblock %}
 
-    <footer><hr>(c) 2018 Team django-unchained Webster 2018 </footer>
-  
+    <footer ><hr>(c) 2018 Team django-unchained Webster 2018 </footer>
+ 
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+
+<!-- <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
+ -->
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">New Notifications</h4>
+      </div>
+      <div class="modal-body">
+        <p></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" onclick='$(".modal-body").text("");' >Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
   <script>
 function get_new_notification(){
     var tag= $("#tag").val();
@@ -131,7 +128,7 @@ function get_new_notification(){
               received_data=JSON.parse(data);
                console.log(JSON.parse(data)[0]);
                for(var i=0;i<data.length;i++)
-               $("#notification").append("<a href="+'/q/'+received_data[i].fields.slug+">"+received_data[i].fields.title+"</a><br>");
+               $(".modal-body").append("<a href="+'/q/'+received_data[i].fields.slug+">"+received_data[i].fields.title+"</a><br>");
                ///alert("new notification received");
                }
        
