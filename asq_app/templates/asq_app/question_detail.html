@@ -2,6 +2,18 @@
 
 {% block content %}
 
+{% load static %}
+{% for file_name in froala_plugins_css %}
+<link href="{% static file_name %}" type="text/css" media="all" rel="stylesheet" />
+{% endfor %}
+
+{% for file_name in froala_plugins_js %}
+<script src="{% static file_name %}"></script>
+
+{% endfor %}
+
+
+
 <h1>title{{ qdata.title }}</h1>
 <em>by -{{ qdata.author }}</em>
 <p> tag--{{ qdata.tags }}</p>
@@ -25,7 +37,7 @@
 {% if user.is_authenticated %}
     <ul>
         {% for answer in qdata.answers.all %}
-        <li>{{ answer.body }} --<em id="up{{answer.id}}"> {{ answer.upvotes }}</em> <button onclick="upvote_update({{answer.id}},{{qdata.id}})">upvote</button>
+        <li>{{ answer.body | safe }} --<em id="up{{answer.id}}"> {{ answer.upvotes }}</em> <button onclick="upvote_update({{answer.id}},{{qdata.id}})">upvote</button>
             <em id="down{{answer.id}}">{{ answer.downvotes }} </em ><button onclick="downvote_update({{answer.id}},{{qdata.id}})">downvote</button>
             <em>{{ answer.author }}</em>
         </li>
@@ -46,8 +58,10 @@
 
 <!-- answer submission form -->
 {% if user.is_authenticated%}
+    
     <form  method="post" >
         {% csrf_token %}
+        {{ ansform.media }}
       {{ansform}}
       <button type="submit" onsubmit="clear_body()">Submit</button>
     </form>

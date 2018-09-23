@@ -6,6 +6,11 @@
 {% else %}
     <a href="{% url 'asq_app:ask' %}">Add Question</a>
 {% endif %} -->
+<form action="/search" method="get">
+    <input name="q" type="text" />
+    <input type="submit" />
+</form>
+
 {% if user.is_authenticated %}
 <a href="{% url 'asq_app:ask' %}">Add Question</a>
 {% else %}

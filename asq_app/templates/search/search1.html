@@ -1,0 +1,30 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+
+<h2>Search</h2>
+<p>qu: {{ qu }}</p>
+<p>r2: {{ r2.count }}</p>
+{% for r22 in r2 %}
+<p>
+    {{ r22.object.title }}
+</p>
+{% endfor %}
+<p>Did you mean {{ suggest }}</p>
+
+{% if results.count > 0 %}
+<h3>Results</h3>
+
+{% for result in results %}
+<p>
+    <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
+</p>
+{% endfor %}
+{% else %}
+<p>No results found.</p>
+{% endif %}
+
+{% endblock %}
+
+
+

@@ -143,5 +143,61 @@ STATICFILES_DIRS = [
 LOGIN_REDIRECT_URL = '/q/'
 #Redirect to home URL after logout 
 LOGOUT_REDIRECT_URL = '/q/'
+MEDIA_ROOT = 'media/'
+FROALA_UPLOAD_PATH = 'froala_uploads/'
+MEDIA_URL = '/media/'
 # Log email reset mail on console. Can't send email yet as server is not configured.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+MEDIA_ROOT = 'media/'
+FROALA_UPLOAD_PATH = 'froala_uploads/'
+MEDIA_URL = '/media/'
+
+
+# FROALA_INCLUDE_JQUERY = False
+
+FROALA_EDITOR_PLUGINS = ('align', 'char_counter', 'code_beautifier', 'code_view', 'colors', 'draggable', 'emoticons',
+                         'entities', 'file', 'font_family', 'font_size', 'fullscreen', 'image', 'image_manager', 'inline_style',
+                         'line_breaker', 'link', 'lists', 'paragraph_format', 'paragraph_style', 'quick_insert', 'quote', 'save', 'table',
+                         'url', 'video')
+
+
+FROALA_EDITOR_THIRD_PARTY = ('image_aviary', 'spell_checker')
+
+
+# Generated array to include all css and js files for Froala in Q and A forms
+froala_editor_css = ['code_view.css', 'quick_insert.css', 'emoticons.css', 'colors.min.css', 'video.css', 'draggable.css', 'line_breaker.min.css', 'quick_insert.min.css', 'colors.css', 'table.css', 'image.min.css', 'special_characters.min.css', 'fullscreen.min.css', 'file.min.css', 'emoticons.min.css',
+                     'char_counter.min.css', 'code_view.min.css', 'draggable.min.css', 'special_characters.css', 'image_manager.css', 'line_breaker.css', 'table.min.css', 'help.min.css', 'char_counter.css', 'image.css', 'help.css', 'file.css', 'fullscreen.css', 'video.min.css', 'image_manager.min.css']
+FROALA_PLUGINS_CSS_FILES = []
+for f in froala_editor_css:
+    FROALA_PLUGINS_CSS_FILES.append('asq_project/froala_editor/css/plugins/' + f)
+
+froala_editor_js = ['image.min.js', 'link.min.js', 'code_beautifier.min.js', 'help.min.js', 'video.min.js', 'font_family.min.js', 'image_manager.min.js', 'code_view.min.js', 'save.min.js', 'emoticons.min.js', 'forms.min.js', 'line_breaker.min.js', 'quote.min.js', 'font_size.min.js', 'draggable.min.js', 'char_counter.min.js',
+                    'url.min.js', 'special_characters.min.js', 'colors.min.js', 'inline_style.min.js', 'fullscreen.min.js', 'print.min.js', 'paragraph_format.min.js', 'table.min.js', 'align.min.js', 'quick_insert.min.js', 'file.min.js', 'paragraph_style.min.js', 'entities.min.js', 'lists.min.js', 'word_paste.min.js']
+FROALA_PLUGINS_JS_FILES = []
+for f in froala_editor_js:
+    FROALA_PLUGINS_JS_FILES.append('asq_project/froala_editor/js/plugins/' + f)
+
+
+# Haystack using Elastic Search (Java based)
+# HAYSTACK_CONNECTIONS = {
+#     'default': {
+#         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+#         'URL': 'http://127.0.0.1:9200/',
+#         'INDEX_NAME': 'haystack_books',
+#     },
+# }
+
+# HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+
+# Haystack using Whoosh (Pyhton based)
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+        'INCLUDE_SPELLING': True
+    },
+}
+
+# HAYSTACK_FUZZY_MAX_EXPANSIONS = 2

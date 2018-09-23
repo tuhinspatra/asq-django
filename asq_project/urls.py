@@ -17,11 +17,10 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from django.conf.urls import include
+from django.conf.urls import include, url
 from django.views.generic import RedirectView
 from asq_app.views import signup
 
-app_name = 'asq_project'
 from asq_app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,6 +29,8 @@ urlpatterns = [
 urlpatterns += [
     path('q/', include('asq_app.urls')),
     path('u/',views.user_dashboard,name='user_dashboard'),
+    url(r'^search/', include('haystack.urls')),
+    url(r'^froala_editor/', include('froala_editor.urls')),
 ]
 
 urlpatterns += [
@@ -44,3 +45,4 @@ urlpatterns += [
 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

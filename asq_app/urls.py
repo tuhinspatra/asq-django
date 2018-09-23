@@ -1,6 +1,6 @@
 from django.urls import path
 from asq_app import views
-from django.conf.urls import include,url
+from django.conf.urls import include, url
 
 app_name = 'asq_app'
 urlpatterns = [

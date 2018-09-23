@@ -3,6 +3,7 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django import forms
+from django.urls import reverse
 
 # Create your models here.
 
@@ -37,9 +38,8 @@ class Question(models.Model):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return ('question_detail', (), {'slug': self.slug})
+        return reverse('asq_app:question_detail', kwargs={'slug': self.slug})
         #return reverse('question_details', kwargs={'pk': self.id})
-        pass
 
 
 class Answer(models.Model):

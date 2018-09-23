@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect,JsonResponse, HttpResponse
-from django.shortcuts import get_object_or_404, render,redirect
+from django.shortcuts import get_object_or_404, render, redirect, render_to_response
 from django.urls import reverse
 from django.views import generic
 from .forms import AskForm ,AnsForm,CommentForm
@@ -10,6 +10,9 @@ from django.shortcuts import render, redirect
 from django.core import serializers
 from .forms import SignUpForm
 from . import views
+from django.conf import settings
+from haystack.query import SearchQuerySet
+from haystack.inputs import BaseInput, Clean
 
 class IndexView(generic.ListView):
     template_name = 'asq_app/index.html'
@@ -50,7 +53,8 @@ def detail(request,slug):
     else:
         ansform = AnsForm()
         commentform = CommentForm()
-    return render(request,'asq_app/question_detail.html',{'qdata':qdata,'commentform':commentform,'ansform':ansform})
+    return render(request, 'asq_app/question_detail.html', {'qdata': qdata, 'commentform': commentform, 'ansform': ansform, 'froala_plugins_js': settings.FROALA_PLUGINS_JS_FILES,
+                                                            'froala_plugins_css': settings.FROALA_PLUGINS_CSS_FILES})
 
 def askForm(request):
     if request.method == 'POST':
@@ -198,3 +202,27 @@ def notification_updates(request):
     notify_serialized = serializers.serialize('json',notification)
 
     return JsonResponse(notify_serialized,safe=False)            
+
+
+class CustomContain(BaseInput):
+    input_type_name = 'custom_contain'
+    def prepare(self, query_obj):
+        query_string = super(CustomContain, self).prepare(query_obj)
+        query_string = query_obj.clean(query_string)
+        exact_bits = [Clean(bit).prepare(query_obj)
+                    for bit in query_string.split(' ') if bit]
+        query_string = u' '.join(exact_bits)
+        return u'*{}*'.format(query_string)
+
+
+# Usage:
+
+
+def search_titles(request):
+    query = request.GET.get('q', '')
+    sqs = SearchQuerySet()
+    r2 = SearchQuerySet().filter(content=CustomContain(query))
+    # r2 = SearchQuerySet().filter(content=query)
+    results = SearchQuerySet().autocomplete(content_auto=query)
+    spelling = sqs.spelling_suggestion(query)
+    return render_to_response('search/search.html', {'qu': query, 'r2': r2, 'results': results, 'suggest': spelling})
