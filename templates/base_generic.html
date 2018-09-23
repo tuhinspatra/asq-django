@@ -51,6 +51,10 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
+             <li class="nav-item active">
+                    <input id="q" type="text"  onkeyup="search_autocomplete()"  />
+                    <input type="button" value="search" onclick="open_search()"/>
+            </li>
             <li class="nav-item active">
               <a class="nav-link" href="/q">Home
                 <span class="sr-only">(current)</span>
@@ -117,6 +121,8 @@
 </div>
   <script>
 function get_new_notification(){
+    $(".modal-body").text("");
+    console.log("fg");
     var tag= $("#tag").val();
     $.ajax({
         url: '/q/notification_route/',
@@ -126,7 +132,7 @@ function get_new_notification(){
         success: function (data) {
             if(data){
               received_data=JSON.parse(data);
-               console.log(JSON.parse(data)[0]);
+               //console.log(JSON.parse(data)[0]);
                for(var i=0;i<data.length;i++)
                $(".modal-body").append("<a href="+'/q/'+received_data[i].fields.slug+">"+received_data[i].fields.title+"</a><br>");
                ///alert("new notification received");
@@ -135,6 +141,33 @@ function get_new_notification(){
    }
       });
     }
+
+function search_autocomplete(){
+    console.log('HELLO');
+    var title= $("#q").val();
+    $.ajax({
+        url: '/q/search/',
+        data: {
+            'q':title
+        },
+        dataType: 'json',
+        success: function (data) {
+            if(data){
+
+
+           }
+       
+   }
+      });
+    }
+
+    function open_search() {
+        let input = $('#q');
+        // console.log(input.val());
+        window.location = "/search/?q=" + input.val();
+    }
+
+
 </script>
 
 

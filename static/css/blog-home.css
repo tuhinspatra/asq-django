@@ -19,3 +19,23 @@ footer {
    padding-top:1000px;
 
 }
+
+
+#question_asked{
+ display:block; 
+ position: relative;
+ margin-top: 10px;
+
+}
+
+#answer_given{
+ display:none; 
+ position: relative;
+}
+
+#comment{
+ display:none; 
+ position: relative;
+}
+
+

@@ -20,7 +20,7 @@
 <p> body--{{ qdata.body }}</p>
 <h1>comments</h1>
 {% for comment in qdata.comments.all %}
-       <p>{{comment.commentbody}}</p>
+       <p>{{comment.commentbody | safe}}</p>
        <kbd>{{comment.author}}</kbd>
     {% endfor %}
 

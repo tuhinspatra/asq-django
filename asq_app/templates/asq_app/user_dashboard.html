@@ -1,18 +1,28 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<h1>question asked</h1>
+<div class="container">
+<ul class="nav nav-pills jumbotron" style="margin-top: 100px">
+  <li class="active"><a href="#" onclick="$('#user_status').html($('#question_asked').html());$('#question_asked').css('display','none');" >Question Asked</a></li>||
+  <li class="active"><a href="#" onclick="$('#user_status').html($('#answer_given').html());">Answer Given</a></li>||
+  <li class="active" ><a href="#" onclick="$('#user_status').html($('#comment').html());">Comments </a></li>
+</ul>
+</div>
+<div id="user_status"></div>
+<div id ="question_asked" ><h1>question asked</h1>
 {% for q in question %}
 <h5><a href="{% url 'asq_app:question_detail' q.slug %}">{{q.title}}</a></h5>
 {% endfor %}
+</div>
 
-<h1>Answer given</h1>
+<div id ="answer_given" ><h1>Answer given</h1>
 {% for ans in answer %}
-<h5>{{ans.body | safe }}</h5>
+<h5><a href="{% url 'asq_app:question_detail' ans.question.slug %}">{{ans | safe }}</a></h5>
 {% endfor %}
-<h1>Comment </h1>
+</div>
+<div id ="comment" ><h1>Comment </h1>
 {% for c in comment %}
-<h5>sd{{c.commentbody}}</h5>
+<h5><a href="{% url 'asq_app:question_detail' c.question.slug %}">{{c.commentbody | safe }}</a></h5>
 {% endfor %}
-
+</div>
 {% endblock %}

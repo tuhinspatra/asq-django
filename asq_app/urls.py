@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     url(r'^ask/',views.askForm,name='ask'),
     url(r'^upvote_route/$', views.upvoter),
+    url(r'^search/$', views.search_titles),
     url(r'^notification_route/$', views.notification_updates),
     url(r'^tag_route/$', views.tag_filter),
      url(r'^downvote_route/$', views.downvoter),
