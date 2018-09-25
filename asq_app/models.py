@@ -76,12 +76,15 @@ class UserVoteDetail(models.Model):
     downvote = models.BooleanField( default = False)
 
     def __str__(self):
-        return self.user
+        return self.user.username
 
 class QComment(models.Model):
     author = models.ForeignKey('auth.User',on_delete=models.CASCADE)
     question = models.ForeignKey('Question',on_delete = models.CASCADE,related_name = 'comments')
     commentbody = models.TextField(max_length = 5000)
+    
+    def __str__(self):
+        return self.commentbody[:20]
 
     
 

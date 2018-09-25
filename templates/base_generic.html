@@ -62,17 +62,17 @@
             </li>
             {% if user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link" data-toggle="modal" data-target="#myModal" onmouseover="get_new_notification()" style="cursor: pointer;">Notifications</a>
+              <a class="nav-link" data-toggle="modal" data-target="#myModal" onclick="get_new_notification()" style="cursor: pointer;">Notifications</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/u">{{ user.username }}!</a>
+              <a class="nav-link" href="{% url 'user_dashboard' %}">{{ user.username }}!</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'logout' %}">Logout</a>
             </li>
              {% else %}
              <li class="nav-item">
-              <a class="nav-link" href="{% url 'login' %}">Login</a>
+              <a class="nav-link" href="/accounts/login">Login</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/accounts/signup">Signup</a>
@@ -94,7 +94,7 @@
     {% endblock %}
 
     <footer ><hr>(c) 2018 Team django-unchained Webster 2018 </footer>
- 
+ <!-- 
     <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
 
@@ -132,15 +132,34 @@ function get_new_notification(){
         success: function (data) {
             if(data){
               received_data=JSON.parse(data);
-               //console.log(JSON.parse(data)[0]);
+               console.log(JSON.parse(data));
                for(var i=0;i<data.length;i++)
-               $(".modal-body").append("<a href="+'/q/'+received_data[i].fields.slug+">"+received_data[i].fields.title+"</a><br>");
+               // if(received_data.)
+               $(".modal-body").append("some one comment or answer your question see more here<a href="+'/q/'+received_data[i].pk+"/"+received_data[i].fields.slug+" onclick='notification_update("+received_data[i].pk+");'"+">"+received_data[i].fields.title+"</a><br>");
                ///alert("new notification received");
                }
        
    }
       });
     }
+
+function notification_update(qid) {
+       ///alert(qid);
+       $.ajax({
+        url: '/q/delete_notification/',
+        data: {
+            'qid':qid
+        },
+        dataType: 'json',
+        success: function (data) {
+            if(data){
+              alert("okk" +data);
+           }
+       
+   }
+      });
+    // body...
+}
 
 function search_autocomplete(){
     console.log('HELLO');
