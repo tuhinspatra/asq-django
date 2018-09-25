@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     {% block title %}<title>ASQ - MMNIT's Q&A Forum</title>{% endblock %}
     {% load static %}
@@ -10,15 +9,22 @@
     <meta name="description" content="ask about mnnit " >
     <meta name="author" content="no one">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" type="text/css" media="all"
-        rel="stylesheet" />
+    <!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script> -->
+    <link href="{% static 'bs4/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    <script src="{% static 'bs4/bootstrap.min.css' %}"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+      crossorigin="anonymous">
     <link href="{% static 'asq_project/froala_editor/css/froala_editor.min.css' %}" type="text/css" media="all" rel="stylesheet" />
     <link href="{% static 'asq_project/froala_editor/css/froala_style.min.css' %}" type="text/css" media="all" rel="stylesheet" />
     
     <script src="{% static 'asq_project/froala_editor/js/froala_editor.min.js' %}"></script>
-    
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/easy-ac/easy-autocomplete.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/easy-ac/easy-autocomplete.themes.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/easy-ac/easy-autocomplete.themes.min.css.map' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/easy-ac/easy-autocomplete.themes.min.css.map' %}">
+    <script src="{% static 'vendor/easy-ac/jquery.easy-autocomplete.min.js' %}"></script>
+
     <script>
         function getCookie(cname) {
             var name = cname + "=";
@@ -31,6 +37,9 @@
             }
             return "";
         }
+        $(function () {
+            querybox.easyAutocomplete(options);
+          });
     </script>
 
      <link rel="stylesheet" type="text/css" href="{% static 'asq_project/tagInput.css' %}">
@@ -43,17 +52,21 @@
 
 
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="/q">Asq Mnnit</a>
+        <a class="navbar-brand" href="/q">asq MNNIT</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
              <li class="nav-item active">
-                    <input id="q" type="text"  onkeyup="search_autocomplete()"  />
-                    <input type="button" value="search" onclick="open_search()"/>
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" id="qbox" placeholder="Search">
+                  <div class="input-group-append">
+                    <button class="btn btn-success" onclick="open_search()"  type="submit"><i class="fas fa-search"></i></button>
+                  </div>
+                </div>
             </li>
             <li class="nav-item active">
               <a class="nav-link" href="/q">Home
@@ -142,32 +155,51 @@ function get_new_notification(){
       });
     }
 
-function search_autocomplete(){
-    console.log('HELLO');
-    var title= $("#q").val();
-    $.ajax({
-        url: '/q/search/',
-        data: {
-            'q':title
-        },
-        dataType: 'json',
-        success: function (data) {
-            if(data){
+  let querybox = $('#qbox');
+  function open_search() {
+    window.location = "/search/?q=" + querybox.val();
+  }
 
+  var options = {
 
-           }
-       
-   }
-      });
+    url: function (phrase) {
+      return '/q/search/?q=' + phrase;
+    },
+    getValue: "title",
+    template: {
+      type: "links",
+      fields: {
+        link: "website-link"
+      }
+    },
+
+    list: {
+      match: {
+        enabled: true
+      },
+      showAnimation: {
+        type: "slide", //normal|slide|fade
+        time: 400,
+        callback: function () { }
+      },
+
+      hideAnimation: {
+        type: "slide", //normal|slide|fade
+        time: 400,
+        callback: function () { }
+      },
+    },
+    placeholder: "Search...",
+    theme: "blue-light"
+  };
+  querybox.keydown(function (e) {
+    if (e.keyCode == 13) {
+      // alert(querybox.val());
+      open_search();
     }
-
-    function open_search() {
-        let input = $('#q');
-        // console.log(input.val());
-        window.location = "/search/?q=" + input.val();
-    }
-
-
+  });
+  
+  
 </script>
 
 

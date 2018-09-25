@@ -4,8 +4,31 @@
 
 {% load static %}
 <!-- for top tags canvas animation -->
-<script src="{% static 'vendor/jqcloud.min.js' %}"></script>
-<link rel="stylesheet" type="text/css" href="{% static 'vendor/jqcloud.min.css' %}">
+<script src="{% static 'vendor/jquery.tagcanvas.min.js' %}"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (!$('#myCanvas').tagcanvas({
+            textColour: '#ff0000',
+            outlineColour: '#ff0000',
+            reverse: true,
+            depth: 0.8,
+            maxSpeed: 0.05,
+            weight: true,
+            weightedMode: 'both',
+            weightSize: 0.6,
+        }, 'tags')) {
+            // something went wrong, hide the canvas container
+            $('#myCanvasContainer').hide();
+        }
+    });
+</script>
+
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+    crossorigin="anonymous">    
+
+
 
 <!-- for froala wysiwig editor -->
 {% for file_name in froala_plugins_css %}
@@ -14,6 +37,7 @@
 
 {% for file_name in froala_plugins_js %}
 <script src="{% static file_name %}"></script>
+
 {% endfor %}
 
 
@@ -48,19 +72,13 @@
 
             <!-- Post Content -->
             {{ qdata.body }}
-
-            <br>
-            <br>
-            <br>
-            <br>
-
+            
             <div class="row">
-                <div class="col-md-10 mr-md-auto" >
+                <div class="col-md-10 mr-md-auto">
                     <hr>
                     <!-- comments -->
                     {% for comment in qdata.comments.all %}
-                    <p style="font-size: 14px">{{ comment.commentbody | safe }} - <a href="#" style="font-size: 14px">{{ comment.author }}</a></p>
-                    
+                    {{ comment.commentbody | safe }}-<a href="#">{{ comment.author }}</a>
                     <hr>
                     {% endfor %}
                 </div>   
@@ -100,45 +118,30 @@
             <br>
             <hr>
 
-            <div class="row">
-                {% if user.is_authenticated %}
-                    {% for answer in qdata.answers.all %}
-                        <div class="col-md-1">
-                            <h2><i class="fas fa-angle-up" id="up{{answer.id}}" style="cursor:pointer" onclick="upvote_update({{ answer.id }},{{ qdata.id }});"></i> <span id="uvcount">{{ answer.upvotes }}</span> </h2>
-                            <br>
-                            <h2><span id="dvcount">{{ answer.downvotes }}</span><i class="fas fa-angle-down" id="down{{answer.id}}" style="cursor:pointer" onclick="downvote_update({{answer.id}},{{qdata.id}})"></i></h2>
-                        </div>
-                        <div class="col-md-11">
-                        {{ answer.body | safe }}
-                        <br>
-                        -<a href="#">{{ answer.author }}</a>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    {% for answer in qdata.answers.all %}
+            {% if user.is_authenticated %}
+                {% for answer in qdata.answers.all %}
+                    {{ answer.body | safe }}
+                    -{{ answer.author }}
+                     <!-- --<em id="up{{answer.id}}"> {{ answer.upvotes }}</em> <button onclick="upvote_update({{answer.id}},{{qdata.id}})">upvote</button>
+                    <em id="down{{answer.id}}">{{ answer.downvotes }} </em><button onclick="downvote_update({{answer.id}},{{qdata.id}})">downvote</button> -->
                     <hr>
-                    <div class="col-md-1">
-                    
-                        <h2><i class="fas fa-angle-up" id="up{{answer.id}}" style="cursor:pointer" onclick="alert('Login to vote the answer')"></i>
-                            <span id="uvcount">{{ answer.upvotes }}</span> </h2>
-                    
-                        <br>
-                        <h2><span id="dvcount">{{ answer.downvotes }}</span><i class="fas fa-angle-down" id="down{{answer.id}}" style="cursor:pointer"
-                                onclick="alert('Login to vote the answer')"></i></h2>
-                    
-                    </div>
-                    <div class="col-md-11">
-                        {{ answer.body | safe }}
-                        <br>
-                        -{{ answer.author }}
-                        <hr>
-                    </div>
+                    <br>
+                {% endfor %}
+            {% else %}
+                {% for answer in qdata.answers.all %}
+                    {{ answer.body }}
+                    -{{ answer.author }}
+                    <!-- <em id="up{{answer.id}}"> {{ answer.upvotes }}</em>
+                    <button onclick="alert('you are not logged in. login to Upvote')">upvote</button>
+                    <em id="down{{answer.id}}">{{ answer.downvotes }} </em>
+                    <button onclick="alert('you are not logged in. login to Downvote')">downvote</button> -->
                     <hr>
-                    {% endfor %}
-                {% endif %}
-            </div>
-            <hr>
+                    <br>
+                {% endfor %}
+            {% endif %}
+
             <!-- answer submission form -->
+
             <button class="btn btn-primary" onclick="showAnswerDialog()">Post your answer</button>
             <br>
             <script>    
@@ -159,6 +162,7 @@
                     {% if user.is_authenticated%}
                         <form method="post">
                             {% csrf_token %}
+                            {{ ansform.media }}
                             <textarea name="body" cols="40" rows="10" required id="id_body"></textarea>
                             <script>
                                 $(function () {
@@ -171,6 +175,7 @@
                     {% else %}
                         <form method="post">
                             {% csrf_token %}
+                            {{ ansform.media }}
                             <textarea name="body" cols="40" rows="10" required id="id_body"></textarea>
                             <script>
                                 $(function () {
@@ -194,7 +199,7 @@
                 <h5 class="card-header">Tag Search</h5>
                 <div class="card-body">
                     <div class="input-group">
-                        <input type="text" id="tag" class="form-control" placeholder="Search by tags...">
+                        <input type="text" class="form-control" placeholder="Search by tags...">
                         <span class="input-group-btn">
                             <button class="btn btn-secondary" onclick="tag_fliter()" type="button">Go!</button>
                         </span>
@@ -207,20 +212,45 @@
             <div class="card my-4">
                 <h5 class="card-header">Top tags</h5>
                 <div class="card-body">
-                    <div id="tagcloud">
-                    
+                    <div id="myCanvasContainer">
+                        <canvas width="300" height="300" id="myCanvas">
+                            <p>Anything in here will be replaced on browsers that support the canvas element</p>
+                        </canvas>
+                    </div>
+                    <div id="tags">
+                        <ul>
+                            <li><a href="#" data-weight="14" style="font-size: 2.83ex">1000</a></li>
+                            <li><a href="#" data-weight="18" style="font-size: 3.61ex">background</a></li>
+                            <li><a href="#" data-weight="40" style="font-size: 9.64ex">canvas</a></li>
+                            <li><a href="#" data-weight="22" style="font-size: 4.47ex">chart</a></li>
+                            <li><a href="#" data-weight="18" style="font-size: 3.46ex">charts</a></li>
+                            <li><a href="#" data-weight="60" style="font-size: 12.32ex">cloud</a></li>
+                            <li><a href="#" data-weight="18" style="font-size: 3.74ex">clouds</a></li>
+                            <li><a href="#" data-weight="17" style="font-size: 3.16ex">example</a></li>
+                            <li><a href="#" data-weight="18" style="font-size: 3.74ex">goat</a></li>
+                            <li><a href="#" data-weight="17" style="font-size: 3.16ex">goat1000</a></li>
+                            <li><a href="#" data-weight="30" style="font-size: 8.36ex">graph</a></li>
+                            <li><a href="#" data-weight="21" style="font-size: 4.36ex">graphs</a></li>
+                            <li><a href="#" data-weight="17" style="font-size: 3.32ex">html</a></li>
+                            <li><a href="#" data-weight="50" style="font-size: 10.68ex">html5</a></li>
+                            <li><a href="#" data-weight="23" style="font-size: 4.69ex">image</a></li>
+                            <li><a href="#" data-weight="24" style="font-size: 4.8ex">javascript</a></li>
+                            <li><a href="#" data-weight="26" style="font-size: 5.47ex">jpeg</a></li>
+                            <li><a href="#" data-weight="13" style="font-size: 2.65ex">jpegsaver</a></li>
+                            <li><a href="#" data-weight="32" style="font-size: 8.77ex">jquery</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
 
             <!-- Side Widget -->
-            <!-- <div class="card my-4">
+            <div class="card my-4">
                 <h5 class="card-header">Side Widget</h5>
                 <div class="card-body">
                     You can put anything you want inside of these side widgets. They are easy to use, and feature the
                     new Bootstrap 4 card containers!
                 </div>
-            </div> -->
+            </div>
 
         </div>
 
@@ -236,7 +266,7 @@
 	function upvote_update(answer_id,question_id){
     
     var btn = $("#up"+answer_id);
-    var res = $("#uvcount");
+
     $.ajax({
         url: '/q/upvote_route/',
         data: {
@@ -246,13 +276,13 @@
         dataType: 'json',
         success: function (data) {
           if (data)
-           res.text(data.votes);
+           btn.text(data.votes);
         }
       });
 	}
 	function downvote_update(answer_id,question_id){
     var btn = $("#down"+answer_id);
-    var res = $("#dvcount");
+
     $.ajax({
         url: '/q/downvote_route/',
         data: {
@@ -262,7 +292,7 @@
         dataType: 'json',
         success: function (data) {
           if (data)
-           res.text(data.votes);
+           btn.text(data.votes);
         }
       });
 	}
@@ -290,39 +320,6 @@
                 }
             });
         }
-    $(function ($) {
-            let words = [
-                { text: "Lorem", weight: 13, link: 'http://github.com/mistic100/jQCloud' },
-                { text: "Ipsum", weight: 10.5, link: 'http://www.strangeplanet.fr' },
-                { text: "Dolor", weight: 9.4, link: 'http://piwigo.org' },
-                { text: "Sit", weight: 8 },
-                { text: "Amet", weight: 6.2 },
-                { text: "Consectetur", weight: 5 },
-                { text: "Adipiscing", weight: 5 },
-                { text: "Lorem", weight: 13, link: 'http://github.com/mistic100/jQCloud' },
-                { text: "Ipsum", weight: 10.5, link: 'http://www.strangeplanet.fr' },
-                { text: "Dolor", weight: 9.4, link: 'http://piwigo.org' },
-                { text: "Sit", weight: 8 },
-                { text: "Amet", weight: 6.2 },
-                { text: "Consectetur", weight: 5 },
-                { text: "Adipiscing", weight: 5 },
-                { text: "Lorem", weight: 13, link: 'http://github.com/mistic100/jQCloud' },
-                { text: "Ipsum", weight: 10.5, link: 'http://www.strangeplanet.fr' },
-                { text: "Dolor", weight: 9.4, link: 'http://piwigo.org' },
-                { text: "Sit", weight: 8 },
-                { text: "Amet", weight: 6.2 },
-                { text: "Consectetur", weight: 5 },
-                { text: "Adipiscing", weight: 5 },
-            ];
-            $('#tagcloud').jQCloud(words, {
-                width: 400,
-                height: 400,
-                center: { x: 0.4, y: 0.4 },
-                delay: 40,
-                shape: 'rectangular'
-            });
-
-        });
 </script>
 
 

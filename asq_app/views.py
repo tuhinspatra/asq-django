@@ -220,13 +220,22 @@ class CustomContain(BaseInput):
 
 def search_titles(request):
     query = request.GET.get('q', '')
+    if query == '':
+        return JsonResponse({})
     sqs = SearchQuerySet()
-    results_custom = SearchQuerySet().filter(content=CustomContain(query))
+    # results_custom = SearchQuerySet().filter(content=CustomContain(query))
     # r2 = SearchQuerySet().filter(content=query)
     results = SearchQuerySet().autocomplete(content_auto=query)
-    spelling = sqs.spelling_suggestion(query)
-    results = serializers.serialize('json',results)
-    results_custom = serializers.serialize('json',results_custom)
+    # spelling = sqs.spelling_suggestion(query)
+    # results = serializers.serialize('json', results)
+    response = []
+    for x in results:
+        obj = {
+            'title': x.object.title,
+            'body': x.object.body[:30],
+            'website-link': reverse('asq_app:question_detail', kwargs={'slug': x.object.slug})
+        }
+        response.append(obj)
 
-    # print(results)
-    return JsonResponse({'results': results, 'results_custom': results_custom})
+    print(response)
+    return JsonResponse(response, safe=False)

@@ -1,18 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
 
-{% extends "base_generic.html" %}
+<head>
+  {% block title %}<title>ASQ - MMNIT's Q&A Forum</title>{% endblock %}
+  {% load static %}
 
-{% block content %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="ask about mnnit ">
+  <meta name="author" content="no one">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
-{% if user.is_authenticated %}
-    <p>You are already logged in!</p>
-{% endif %}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  <link href="{% static 'css/login.css' %}"  rel="stylesheet">
+</head>
+
+<body>
+
+  {% if user.is_authenticated %}
+    <script>alert("you are already logged in!!");window.location="/q/"</script>
+  {% endif %}
+
+ {% if next %}
+    {% if user.is_authenticated %}
+      <p>Your account doesn't have access to this page. To proceed,
+      please login with an account that has access.</p>
+    {% else %}
+      <p>Please login to see this page.</p>
+    {% endif %}
+  {% endif %}
+
+<div class="container">
 
 
-{% if form.errors %}
-  <p>Your username and password didn't match. Please try again.</p>
-{% endif %}
+  <div class="omb_login">
+    <h3 class="omb_authTitle">Login</h3>
+    <div class="row omb_row-sm-offset-3 omb_socialButtons">
+      <div class="col-xs-4 col-sm-2">
+        <a href="#" class="btn btn-lg btn-block omb_btn-facebook">
+          <!-- <i class="fa fa-facebook visible-xs"></i> -->
+          <i class="fab fa-facebook-square "></i>
+          <span class="hidden-xs">Facebook</span>
+        </a>
+      </div>
+      <div class="col-xs-4 col-sm-2">
+        <a href="#" class="btn btn-lg btn-block omb_btn-twitter">
+          <i class="fab fa-twitter"></i>
+          <span class="hidden-xs">Twitter</span>
+        </a>
+      </div>
+      <div class="col-xs-4 col-sm-2">
+        <a href="#" class="btn btn-lg btn-block omb_btn-google">
+          <i class="fab fa-google-plus-g"></i>
+          <span class="hidden-xs">Google+</span>
+        </a>
+      </div>
+    </div>
 
-{% if next %}
+    <div class="row omb_row-sm-offset-3 omb_loginOr">
+      <div class="col-xs-12 col-sm-6">
+        <hr class="omb_hrOr">
+        <span class="omb_spanOr">or</span>
+      </div>
+    </div>
+
+    <div class="row omb_row-sm-offset-3">
+      <div class="col-xs-12 col-sm-6">
+        <form class="omb_loginForm" action="{% url 'login' %}" autocomplete="off" method="POST">
+          {% csrf_token %}
+
+          <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-user"></i></span>
+            <input type="text" class="form-control" id="id_username" name="username" placeholder="Username">
+          </div>
+          <br>
+          <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+            <input type="password" class="form-control" id="id_password" name="password" placeholder="Password">
+          </div>
+          {% if form.errors %}
+          <span class="help-block">username and password didn't match</span>
+          {% endif %}
+         <br>
+          <button class="btn btn-lg btn-primary btn-block" type="submit" value="login" >Login</button>
+          <input type="hidden" name="next" value="{{ next }}" />
+        </form>
+        <br>
+        <p style="text-align:center">or <a href="/accounts/signup/">register here</a></p>
+      </div>
+    </div>
+    
+  </div>
+
+
+</body>
+
+
+
+
+
+
+
+<!-- {% if next %}
   {% if user.is_authenticated %}
     <p>Your account doesn't have access to this page. To proceed,
     please login with an account that has access.</p>
@@ -40,6 +133,4 @@
 </form>
 
 {# Assumes you setup the password_reset view in your URLconf #}
-<p><a href="{% url 'password_reset' %}">Lost password?</a></p>
-
-{% endblock %}
+<p><a href="{% url 'password_reset' %}">Lost password?</a></p> -->
