@@ -123,3 +123,5 @@ class Notification(models.Model):
             return self.created_by.get_username()+" answered on "+self.question.title
         elif self.iscomment == True:
             return self.created_by.get_username()+" commented on "+self.question.title
+
+
