@@ -103,6 +103,10 @@
     function user_search(){
    // alert("okk"+$("#user_search").val());
      var user_name= $("#user_search").val();
+     if(user_name.length==0){
+       $("#user_result").html("");
+       return;
+     }
     $.ajax({
         url: '/q/user_search/',
         data: {
