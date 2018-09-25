@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^ask/',views.askForm,name='ask'),
     url(r'^upvote_route/$', views.upvoter),
     url(r'^search/$', views.search_titles),
+    url(r'^user_search/$', views.user_search),
     url(r'^notification_route/$', views.notification_updates),
     url(r'^delete_notification/$', views.delete_notification),
     url(r'^tag_route/$', views.tag_filter),

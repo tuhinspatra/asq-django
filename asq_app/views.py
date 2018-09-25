@@ -104,6 +104,21 @@ def tag_filter(request):
         data = {'question':"None"}    
     return JsonResponse(data)
 
+def user_search(request):
+    user_name=request.GET.get('user_name')
+    try:
+        user_list = []
+        user_ref = []
+        for user in User.objects.filter(username__icontains=user_name):
+            user_list.append(user.id)
+            user_ref.append(user.username)
+            print(user.username)
+        data = {'user':user_list,'username':user_ref}    
+    except User.DoesNotExist:
+        user_list = []
+        data = {'user':"None"}   
+    return JsonResponse(data)
+
 
 def top_tag(request):
     

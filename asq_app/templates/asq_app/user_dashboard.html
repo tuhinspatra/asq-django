@@ -8,9 +8,10 @@
   		<div class="col-sm-10"><h1>{{user.username}}</h1></div>
     	<!-- <div class="col-sm-2"><a href="/users" class="pull-right"><img title="profile image" class="img-circle img-responsive" src="http://www.gravatar.com/a vatar/28fd20ccec6865e2d5f0e1f4446eb7bf?s=100"></a></div>-->
     </div>
+    
     <div class="row">
   		<div class="col-sm-3"><!--left col-->
-              
+        
 
       <div class="text-center">
         <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar rounded-circle img-thumbnail" alt="avatar">
@@ -94,6 +95,39 @@
 
 </div>
 </div>
+<input id ="user_search" onkeyup="user_search();"  />
+    <button onclick="user_search();">user</button>
+    <div id ="user_result"></div>
+              
+<script>
+    function user_search(){
+   // alert("okk"+$("#user_search").val());
+     var user_name= $("#user_search").val();
+    $.ajax({
+        url: '/q/user_search/',
+        data: {
+          'user_name':user_name
+        },
+        dataType: 'json',
+        success: function (data) {
+         // alert("successfully");
+          
+           if(data.user.length == 0){
+                txt="No Question Found";
+            }
+          else {
+            txt="";
+            for(var i=0;i<(data.user).length;i++)
+                 txt+="<a href='"+data.user[i]+"'>"+data.username[i]+"</a><br>";
+          
+            $("#user_result").html("<p>"+txt+"</p>");
+           } 
+       
+   }
+      });
+    }
+
+    </script>
 {% else%}
 <p>No USer Exist</p>
 {% endif %}
