@@ -2,8 +2,9 @@ from django.http import HttpResponseRedirect,JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect, render_to_response
 from django.urls import reverse
 from django.views import generic
+from django.contrib.auth.models import User
 from .forms import AskForm ,AnsForm,CommentForm
-from .models import Answer, Question,UserVoteDetail,QComment,TagSearch,Notification
+from .models import Answer, Question,UserVoteDetail,QComment,TagSearch,Notification 
 import json
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
@@ -13,6 +14,7 @@ from . import views
 from django.conf import settings
 from haystack.query import SearchQuerySet
 from haystack.inputs import BaseInput, Clean
+from django.db.models import Count
 
 class IndexView(generic.ListView):
     template_name = 'asq_app/index.html'
@@ -23,8 +25,8 @@ class IndexView(generic.ListView):
         return Question.objects.order_by('-created_on')
 
 
-def detail(request,slug):
-    qdata=Question.objects.get(slug=slug)
+def detail(request,qid,slug):
+    qdata=Question.objects.get(id=qid)
     tag_list=(qdata.tags).split(",")
     if request.method == 'POST':
         ansform = AnsForm(request.POST)
@@ -35,8 +37,8 @@ def detail(request,slug):
             instance.question = qdata
             instance.save()
             question = Question.objects.get(id=qdata.id)
-            Notification.objects.create(received_by=question.author,created_by=request.user,question=question,isans=True,answer=instance,new_notification=True)
-            #ansform = AnsForm()
+            if question.author != request.user:
+                Notification.objects.create(received_by=question.author,created_by=request.user,question=question,isans=True,answer=instance,new_notification=True)
             #url=qdata.get_abolute_url()
             return HttpResponseRedirect(request.path)
         elif commentform.is_valid():
@@ -45,7 +47,8 @@ def detail(request,slug):
             instance.question = qdata
             instance.save()
             question = Question.objects.get(id=qdata.id)
-            Notification.objects.create(received_by=question.author,created_by=request.user,question=question,iscomment=True,comment=instance,new_notification=True)
+            if question.author != request.user:
+                Notification.objects.create(received_by=question.author,created_by=request.user,question=question,iscomment=True,comment=instance,new_notification=True)
             #ansform = AnsForm()
             #url=qdata.get_abolute_url()
             return HttpResponseRedirect(request.path)    
@@ -66,7 +69,7 @@ def askForm(request):
             tag_list = (instance.tags).split(",")
             for tag in tag_list:
                 TagSearch.objects.create(tag=tag,question_id=instance.id,question_slug=instance.slug,question_title=instance.title)
-            return redirect('/q/'+instance.slug)
+            return redirect('/q/'+str(instance.id)+"/"+instance.slug)
     else:
     	askform = AskForm()
     return render(request,'asq_app/askform.html',{'askform':askform})
@@ -90,12 +93,31 @@ def tag_filter(request):
     try:
         question_list=[]
         question_title=[]
-        for question in TagSearch.objects.filter(tag=tag_name):
+        question_id = []
+        for question in TagSearch.objects.filter(tag__icontains=tag_name):
             question_list.append(question.question_slug)
             question_title.append(question.question_title)
-        data = {'question':question_list,'question_title':question_title}    
+            question_id.append(question.question_id)
+        data = {'question':question_list,'question_title':question_title,'question_id':question_id}    
     except Question.DoesNotExist:
         question_list = []
+        data = {'question':"None"}    
+    return JsonResponse(data)
+
+
+def top_tag(request):
+    
+    try:
+        tag_list = []
+        tags = TagSearch.objects.values('tag').order_by('tag').annotate(the_count=Count('tag'))
+       
+        for t in tags:
+            tag_list.append(t)
+        #tag_list.sort()
+        tag = sorted(tag_list, key = lambda i: i['the_count'],reverse=True)
+
+        data = {'tags':tag[:min(len(tag),20)]}    
+    except Question.DoesNotExist:
         data = {'question':"None"}    
     return JsonResponse(data)
 
@@ -161,6 +183,12 @@ def signup(request):
 
 def user_dashboard(request):
     user = request.user.id
+    upvote = 0
+    downvote = 0
+    try:
+        user = User.objects.get(id=user)
+    except User.DoesNotExist:
+        user = None
     question = []
     try:
         for q in Question.objects.filter(author_id=user):
@@ -171,6 +199,9 @@ def user_dashboard(request):
     try:
         for ans in Answer.objects.filter(author_id=user):
             answer.append(ans)
+            upvote += UserVoteDetail.objects.filter(answer=ans.id,user=request.user,upvote=True).count()
+            downvote += UserVoteDetail.objects.filter(answer=ans.id,user=request.user,downvote=True).count()
+
     except Answer.DoesNotExist:
         answer=[]        
     comment =[]
@@ -182,7 +213,49 @@ def user_dashboard(request):
     data = {
     'question':question,
     'answer':answer,
-    'comment':comment
+    'comment':comment,
+    'user':user,
+    'upvote':upvote,
+    'downvote':downvote
+    }
+    #print(upvote)
+    return render(request,'asq_app/user_dashboard.html',data)    
+
+def common_user_dashboard(request,uid):
+    upvote = 0
+    downvote = 0
+    try:
+        user = User.objects.get(id=uid)
+    except User.DoesNotExist:
+        user = None
+    question = []
+    try:
+        for q in Question.objects.filter(author_id=uid):
+            question.append(q)
+    except Question.DoesNotExist:
+        question=[]
+    answer =[]
+    try:
+        for ans in Answer.objects.filter(author_id=uid):
+            answer.append(ans)
+            upvote += UserVoteDetail.objects.filter(answer=ans.id,user=user,upvote=True).count()
+            downvote += UserVoteDetail.objects.filter(answer=ans.id,user=user,downvote=True).count()
+
+    except Answer.DoesNotExist:
+        answer=[]        
+    comment =[]
+    try:
+        for c in QComment.objects.filter(author_id=uid):
+            comment.append(c)
+    except QComment.DoesNotExist:
+        comment=[]        
+    data = {
+    'question':question,
+    'answer':answer,
+    'comment':comment,
+    'user':user,
+    'upvote':upvote,
+    'downvote':downvote
     }
     return render(request,'asq_app/user_dashboard.html',data)    
 
@@ -190,10 +263,12 @@ def user_dashboard(request):
 
 def notification_updates(request):
     notification = []
+    isans =[]
     try:
         
         for notify in Notification.objects.filter(received_by=request.user,new_notification=True):
-            notification.append(notify.question) 
+            notification.append(notify.question)
+            isans.append(notify.isans) 
             # print(notify)
     except Notification.DoesNotExist:
         notification = []
@@ -202,6 +277,15 @@ def notification_updates(request):
     notify_serialized = serializers.serialize('json',notification)
 
     return JsonResponse(notify_serialized,safe=False)            
+
+def delete_notification(request):
+    notification_id = request.GET.get('qid')
+    for notify in Notification.objects.filter(question_id=notification_id,new_notification=True):
+        notify.new_notification=False
+        notify.save()
+
+    data={'status':"successfully deleted"}
+    return JsonResponse(data)            
 
 
 class CustomContain(BaseInput):
@@ -233,7 +317,7 @@ def search_titles(request):
         obj = {
             'title': x.object.title,
             'body': x.object.body[:30],
-            'website-link': reverse('asq_app:question_detail', kwargs={'slug': x.object.slug})
+            'website-link': reverse('asq_app:question_detail', kwargs={'qid':x.object.id,'slug': x.object.slug})
         }
         response.append(obj)
 

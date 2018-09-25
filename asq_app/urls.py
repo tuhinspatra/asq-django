@@ -9,9 +9,11 @@ urlpatterns = [
     url(r'^upvote_route/$', views.upvoter),
     url(r'^search/$', views.search_titles),
     url(r'^notification_route/$', views.notification_updates),
+    url(r'^delete_notification/$', views.delete_notification),
     url(r'^tag_route/$', views.tag_filter),
+    url(r'^top_tag/$', views.top_tag),
      url(r'^downvote_route/$', views.downvoter),
      #path('dashboard', views.user_dashboard, name='user_dashboard'),
-     path('<slug:slug>', views.detail, name='question_detail'),
+     path('<int:qid>/<slug:slug>', views.detail, name='question_detail'),
 
 ]

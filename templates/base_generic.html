@@ -9,10 +9,10 @@
     <meta name="description" content="ask about mnnit " >
     <meta name="author" content="no one">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script> -->
-    <link href="{% static 'bs4/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
-    <script src="{% static 'bs4/bootstrap.min.css' %}"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <!-- <link href="{% static 'bs4/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    <script src="{% static 'bs4/bootstrap.min.css' %}"></script> -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
       crossorigin="anonymous">
     <link href="{% static 'asq_project/froala_editor/css/froala_editor.min.css' %}" type="text/css" media="all" rel="stylesheet" />
@@ -75,17 +75,17 @@
             </li>
             {% if user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link" data-toggle="modal" data-target="#myModal" onmouseover="get_new_notification()" style="cursor: pointer;">Notifications</a>
+              <a class="nav-link" data-toggle="modal" data-target="#myModal" onclick="get_new_notification()" style="cursor: pointer;">Notifications</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/u">{{ user.username }}!</a>
+              <a class="nav-link" href="{% url 'user_dashboard' %}">{{ user.username }}!</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'logout' %}">Logout</a>
             </li>
              {% else %}
              <li class="nav-item">
-              <a class="nav-link" href="{% url 'login' %}">Login</a>
+              <a class="nav-link" href="/accounts/login">Login</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/accounts/signup">Signup</a>
@@ -107,7 +107,7 @@
     {% endblock %}
 
     <footer ><hr>(c) 2018 Team django-unchained Webster 2018 </footer>
- 
+ <!-- 
     <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
 
@@ -132,6 +132,7 @@
 
   </div>
 </div>
+
   <script>
 function get_new_notification(){
     $(".modal-body").text("");
@@ -145,9 +146,10 @@ function get_new_notification(){
         success: function (data) {
             if(data){
               received_data=JSON.parse(data);
-               //console.log(JSON.parse(data)[0]);
+               console.log(JSON.parse(data));
                for(var i=0;i<data.length;i++)
-               $(".modal-body").append("<a href="+'/q/'+received_data[i].fields.slug+">"+received_data[i].fields.title+"</a><br>");
+               // if(received_data.)
+               $(".modal-body").append("some one comment or answer your question see more here<a href="+'/q/'+received_data[i].pk+"/"+received_data[i].fields.slug+" onclick='notification_update("+received_data[i].pk+");'"+">"+received_data[i].fields.title+"</a><br>");
                ///alert("new notification received");
                }
        
@@ -192,14 +194,32 @@ function get_new_notification(){
     placeholder: "Search...",
     theme: "blue-light"
   };
+
   querybox.keydown(function (e) {
     if (e.keyCode == 13) {
       // alert(querybox.val());
       open_search();
+      function notification_update(qid) {
+            ///alert(qid);
+            $.ajax({
+              url: '/q/delete_notification/',
+              data: {
+                  'qid':qid
+              },
+              dataType: 'json',
+              success: function (data) {
+                  if(data){
+                    alert("okk" +data);
+                }
+            
+        }
+            });
+          // body...
+      }
     }
-  });
-  
-  
+  } 
+);
+
 </script>
 
 

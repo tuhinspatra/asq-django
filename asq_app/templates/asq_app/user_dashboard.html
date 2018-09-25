@@ -1,28 +1,100 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<div class="container">
-<ul class="nav nav-pills jumbotron" style="margin-top: 100px">
-  <li class="active"><a href="#" onclick="$('#user_status').html($('#question_asked').html());$('#question_asked').css('display','none');" >Question Asked</a></li>||
-  <li class="active"><a href="#" onclick="$('#user_status').html($('#answer_given').html());">Answer Given</a></li>||
-  <li class="active" ><a href="#" onclick="$('#user_status').html($('#comment').html());">Comments </a></li>
-</ul>
-</div>
-<div id="user_status"></div>
+<br><br>
+ {% if user %}
+<div class="container bootstrap snippet">
+    <div class="row">
+  		<div class="col-sm-10"><h1>{{user.username}}</h1></div>
+    	<!-- <div class="col-sm-2"><a href="/users" class="pull-right"><img title="profile image" class="img-circle img-responsive" src="http://www.gravatar.com/a vatar/28fd20ccec6865e2d5f0e1f4446eb7bf?s=100"></a></div>-->
+    </div>
+    <div class="row">
+  		<div class="col-sm-3"><!--left col-->
+              
+
+      <div class="text-center">
+        <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar rounded-circle img-thumbnail" alt="avatar">
+        <h6>Upload a different photo...</h6>
+        <input type="file" class="text-center center-block file-upload">
+      </div></hr><br>
+
+               
+          <div class="panel panel-default">
+            <div class="panel-heading">Date Of Joining </div>
+            <div class="panel-body">{{user.date_joined | date}}</div>
+          </div>
+          
+          
+          <ul class="list-group">
+            <li class="list-group-item text-muted">Activity <i class="fa fa-dashboard fa-1x"></i></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Dislikes</strong></span> {{downvote}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Likes</strong></span> {{upvote}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Posts</strong></span> {{question | length}}</li>
+           
+          </ul> 
+          <!--      
+          <div class="panel panel-default">
+            <div class="panel-heading">Social Media</div>
+            <div class="panel-body">
+            	<i class="fa fa-facebook fa-2x"></i> <i class="fa fa-github fa-2x"></i> <i class="fa fa-twitter fa-2x"></i> <i class="fa fa-pinterest fa-2x"></i> <i class="fa fa-google-plus fa-2x"></i>
+            </div>
+          </div -->
+          
+        </div><!--/col-3-->
+    	<div class="col-sm-9">
+            <ul class="nav nav-tabs">
+                <li class="active nav-item"><a  class="nav-link" data-toggle="tab" href="#home" onclick="$('#user_status').css('visibility','visible');$('#user_status').html($('#question_asked').html());$('#question_asked').css('display','none');">Question</a></li>
+                <li class="active nav-item"><a class="nav-link" data-toggle="tab"  href="#messages" onclick="$('#user_status').css('visibility','visible');$('#user_status').html($('#answer_given').html());$('#question_asked').css('display','none');">Answer</a></li>
+                <li class="active nav-item"><a  class="nav-link" data-toggle="tab" href="#settings" onclick="$('#user_status').css('visibility','visible');$('#user_status').html($('#comment').html());$('#question_asked').css('display','none');">Comment</a></li>
+
+		 <div class="col-md-8" style="margin-top: 100px">
+
+
+<div id="user_status" ></div>
 <div id ="question_asked" ><h1>question asked</h1>
+	 <table class="table">
 {% for q in question %}
-<h5><a href="{% url 'asq_app:question_detail' q.slug %}">{{q.title}}</a></h5>
+	<tr  >
+        <th><a href="{% url 'asq_app:question_detail' q.id q.slug %}">{{q.title}}</a></th>
+         <th>Posted on - {{q.created_on | date}}</th>
+    </tr>
+<!-- <h5><a href="{% url 'asq_app:question_detail' q.id q.slug %}">{{q.title}}</a></h5> -->
 {% endfor %}
+ </table>
 </div>
 
 <div id ="answer_given" ><h1>Answer given</h1>
+	 <table class="table">
 {% for ans in answer %}
-<h5><a href="{% url 'asq_app:question_detail' ans.question.slug %}">{{ans | safe }}</a></h5>
+
+<tr  >
+	 <th>.</th>
+        <th><a href="{% url 'asq_app:question_detail' ans.question.id ans.question.slug %}">{{ans | safe }}</a></th>
+       
+    </tr>
+
 {% endfor %}
+</table>
 </div>
 <div id ="comment" ><h1>Comment </h1>
+	 <table class="table">
+
 {% for c in comment %}
-<h5><a href="{% url 'asq_app:question_detail' c.question.slug %}">{{c.commentbody | safe }}</a></h5>
+<tr  >
+	 <th></th>
+        <th><a href="{% url 'asq_app:question_detail' c.question.id c.question.slug %}">{{c | safe }}</a></th>
+       
+      
+    </tr>
+
 {% endfor %}
+</table>
 </div>
+</div>
+
+</div>
+</div>
+{% else%}
+<p>No USer Exist</p>
+{% endif %}
 {% endblock %}

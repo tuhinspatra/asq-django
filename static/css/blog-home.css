@@ -24,7 +24,7 @@ footer {
 #question_asked{
  display:block; 
  position: relative;
- margin-top: 10px;
+ 
 
 }
 
@@ -37,5 +37,4 @@ footer {
  display:none; 
  position: relative;
 }
-
 

@@ -31,7 +31,7 @@
             <!-- Author -->
             <p class="lead">
                 by
-                <a href="#">{{ qdata.author }}</a>
+                <a href="/u/{{ question.author_id }}">{{ qdata.author }}</a>
             </p>
 
             <hr>
@@ -59,7 +59,7 @@
                     <hr>
                     <!-- comments -->
                     {% for comment in qdata.comments.all %}
-                    <p style="font-size: 14px">{{ comment.commentbody | safe }} - <a href="#" style="font-size: 14px">{{ comment.author }}</a></p>
+                    <p style="font-size: 14px">{{ comment.commentbody | safe }} - <a href="/u/{{ question.author_id }}" style="font-size: 14px">{{ comment.author }}</a></p>
                     
                     <hr>
                     {% endfor %}
@@ -111,7 +111,7 @@
                         <div class="col-md-11">
                         {{ answer.body | safe }}
                         <br>
-                        -<a href="#">{{ answer.author }}</a>
+                        -<a href="/u/{{ question.author_id }}">{{ answer.author }}</a>
                         </div>
                     {% endfor %}
                 {% else %}
@@ -130,7 +130,7 @@
                     <div class="col-md-11">
                         {{ answer.body | safe }}
                         <br>
-                        -{{ answer.author }}
+                        -<a href="/u/{{ question.author_id }}">{{ answer.author }}</a>
                         <hr>
                     </div>
                     <hr>
@@ -194,7 +194,7 @@
                 <h5 class="card-header">Tag Search</h5>
                 <div class="card-body">
                     <div class="input-group">
-                        <input type="text" id="tag" class="form-control" placeholder="Search by tags...">
+                        <input type="text" id="tag" onkeyup="tag_fliter()" class="form-control" placeholder="Search by tags...">
                         <span class="input-group-btn">
                             <button class="btn btn-secondary" onclick="tag_fliter()" type="button">Go!</button>
                         </span>
@@ -233,6 +233,33 @@
 
 <!-- upvote downvote ajax functions -->
 <script>
+  function related_tag(relate_tag){
+    alert("okk"+relate_tag.split(",")[0]);
+     var tag=relate_tag.split(",")[0];
+    $.ajax({
+        url: '/q/tag_route/',
+        data: {
+          'tag':tag
+        },
+        dataType: 'json',
+        success: function (data) {
+          if(data.question.length == 0){
+            txt="No Question Found";
+          }
+          else if (data){
+            txt="";
+            for(var i=0;i<Math.min(10,(data.question).length);i++)
+            {
+                // txt += "<a onclick='"window.location = "+" / q / "+data.question_id[i]+" / "+data.question[i]+"'"+">"+data.question_title[i]+"</a><br>";
+                txt+=("<a onclick=window.location='q/"+data.question.id[i]+"/"+data.question[i]+"'>"+data.question_title[i]+"</a><br>");
+            }
+            $("#related_tag_content").html("<p>"+txt+"</p>");
+           
+       }
+      }
+    });
+  
+  }
 	function upvote_update(answer_id,question_id){
     
     var btn = $("#up"+answer_id);
@@ -268,28 +295,32 @@
 	}
 
     function tag_fliter() {
-            var tag = $("#tag").val();
-            $.ajax({
-                url: '/q/tag_route/',
-                data: {
-                    'tag': tag
-                },
-                dataType: 'json',
-                success: function (data) {
-                    if (data.question.length == 0) {
-                        txt = "No Question Found";
-                    }
-                    else if (data) {
-                        txt = ""
-                        for (var i = 0; i < (data.question).length; i++)
-                            txt += "<a href=" + data.question[i] + ">" + data.question_title[i] + "</a><br>"
-                    }
-                    $("#tag_fliter_content").html("<p>" + txt + "</p>")
-
-
-                }
-            });
+        var tag = $("#tag").val();
+        if(tag.length==0){
+            $("#tag_fliter_content").html("");
+            return;
         }
+        $.ajax({
+            url: '/q/tag_route/',
+            data: {
+                'tag': tag
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.question.length == 0) {
+                    txt = "No Question Found";
+                }
+                else if (data) {
+                    txt = ""
+                    for (var i = 0; i < (data.question).length; i++)
+                        txt += "<a href=" + data.question[i] + ">" + data.question_title[i] + "</a><br>"
+                }
+                $("#tag_fliter_content").html("<p>" + txt + "</p>")
+
+
+            }
+        });
+    }
     $(function ($) {
             let words = [
                 { text: "Lorem", weight: 13, link: 'http://github.com/mistic100/jQCloud' },

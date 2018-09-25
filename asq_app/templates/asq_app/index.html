@@ -2,6 +2,14 @@
 
 {% block content %}
 
+<script type="text/javascript">
+    $(document).ready(function () {
+       top_tag();
+    });
+</script>
+
+
+
 {% load static %}
 <script src="{% static 'vendor/jqcloud.min.js' %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static 'vendor/jqcloud.min.css' %}">
@@ -24,10 +32,10 @@
                 <div class="card mb-4">
                     <!-- <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap"> -->
                     <div class="card-body">
-                        <h5 class="card-title"><a href="{% url 'asq_app:question_detail' question.slug %}">{{ question.title }}</a></h5>
+                        <h5 class="card-title"><a href="{% url 'asq_app:question_detail' question.id question.slug %}">{{ question.title }}</a></h5>
                         <!-- <br> -->
                         modified on {{ question.created_on }}
-                        <i class="fas fa-user"></i> by {{ question.author.username }}
+                        <i class="fas fa-user"></i> by <a href="/u/{{ question.author_id }}">{{ question.author.username }}</a>
                         <i class="fas fa-pen-alt"></i> {{ question.answers.all.count }} answers
                     </div>
                 </div>
@@ -43,7 +51,7 @@
                     <h5 class="card-header">Tag Search</h5>
                     <div class="card-body">
                         <div class="input-group">
-                            <input type="text" id="tag" class="form-control" placeholder="Search by tags...">
+                            <input type="text" id="tag" onkeyup="tag_fliter();" class="form-control" placeholder="Search by tags...">
                             <span class="input-group-btn">
                                 <button class="btn btn-secondary" onclick="tag_fliter()" type="button">Go!</button>
                             </span>
@@ -63,14 +71,6 @@
                     </div>
                 </div>
             
-                <!-- Side Widget -->
-                <!-- <div class="card my-4">
-                    <h5 class="card-header">Side Widget</h5>
-                    <div class="card-body">
-                        You can put anything you want inside of these side widgets. They are easy to use, and feature the new
-                        Bootstrap 4 card containers!
-                    </div>
-                </div> -->
             </div>
             <!-- @@ col-md-4 div end @@ -->
         </div>
@@ -82,8 +82,9 @@
 {% endif %}
 
 <script>
-function tag_fliter(){
-    var tag= $("#tag").val();
+    function tag_fliter(){
+   // alert("okk"+$("#tag").val());
+     var tag= $("#tag").val();
     $.ajax({
         url: '/q/tag_route/',
         data: {
@@ -91,21 +92,55 @@ function tag_fliter(){
         },
         dataType: 'json',
         success: function (data) {
-        	if(data.question.length == 0){
-        		txt="No Question Found";
-        	}
+            console.log(data);
+            if(data.question.length == 0){
+                txt="No Question Found";
+            }
           else if (data){
-          	txt=""
-          	for(var i=0;i<(data.question).length;i++)
-          		txt+="<a href="+data.question[i]+">"+data.question_title[i]+"</a><br>"
-          }
-          	$("#tag_fliter_content").html("<p>"+txt+"</p>")
-           
+            txt="";
+            for(var i=0;i<(data.question).length;i++)
+                txt+="<a href="+data.question_id[i]+"/"+data.question[i]+">"+data.question_title[i]+"</a><br>";
+          
+            $("#tag_fliter_content").html("<p>"+txt+"</p>");
+          } 
        
    }
       });
     }
     
+    function top_tag(){
+    $.ajax({
+        url: '/q/top_tag/',
+        data: {
+        },
+        dataType: 'json',
+        success: function (data) {
+            if(data){
+                  txt="<ul>"     ; 
+            for(var i=0;i<data.tags.length;i++)
+                txt+='<li><a data-weight="40" style="font-size: 29.64ex" >'+data.tags[i].tag+'</a></li>';
+            txt+="</ul>";
+            $("#tags").html(txt);
+             if (!$('#myCanvas').tagcanvas({
+            textColour: '#ff0000',
+            outlineColour: '#ff00ff',
+            reverse: true,
+            depth: 0.8,
+            maxSpeed: 0.3,
+            weight: true,
+            weightedMode: 'both',
+            weightSize: 0.6,
+        }, 'tags')) {
+            // something went wrong, hide the canvas container
+            $('#myCanvasContainer').hide();
+        }
+           
+       }
+       }
+      });
+}
+    
+
 
     function changePage(){
         window.location="/q/ask/";
