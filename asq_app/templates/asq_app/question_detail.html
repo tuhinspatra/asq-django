@@ -16,7 +16,13 @@
 <script src="{% static file_name %}"></script>
 {% endfor %}
 
+<script>
+     $(document).ready(function () {
+       related_tag();
+       top_tag();
+    });
 
+</script>
 <!-- Page Content -->
 <div class="container">
 
@@ -32,22 +38,36 @@
             <p class="lead">
                 <small>by <a href="/u/{{ question.author_id }}"> <i class="fas fa-user"></i> {{ qdata.author }}</a></small> | <small style="font-size:14px;" class="text-muted"> <i class="fas fa-clock"></i>  Posted on {{ qdata.created_on }}</small>
             </p>
+            <br>
+            <div class="row">
+                <div class="col-md-1">
+                    <h2><i class="fas fa-angle-up" id="qup{{qdata.id}}" style="cursor:pointer" onclick="question_upvote_update({{ qdata.id }});"></i> <span id="quvcount">{{ qdata.upvotes }}</span> </h2>
+                    <!-- <br> -->
+                    <h2><span id="qdvcount">{{ qdata.downvotes }}</span><br><i class="fas fa-angle-down" id="qdown{{qdata.id}}" style="cursor:pointer" onclick="question_downvote_update({{qdata.id}})"></i></h2>
+                    
+                </div>
+                <!-- <p id="q_upvote"  onclick="question_upvote_update({{qdata.id}})">{{qdata.upvotes}}</p>
+                <p id="q_downvote"  onclick="question_downvote_update({{qdata.id}})">{{qdata.downvotes}}</p>
+                <div id="question_vote"></div> -->
+                <div class="col-md-11">
+                    {{ qdata.body | safe }}
+                    <br>
+                    <br>
+                    <div id="taglist"></div>
+                    <br>
+                    <br>
+                    <br>
+                    <h4>{{ qdata.comments.count }} Comments</h4>
+                    <hr>
+        
+                    <!-- comments -->
+                    {% for comment in qdata.comments.all %}
+                    {{ comment.commentbody | safe }} - <a href="/u/{{ question.author_id }}" style="font-size: 14px">{{ comment.author }}</a>
+                    <hr>
+                    {% endfor %}
+                </div>
 
-            <hr>
-            <br>
-            {{ qdata.body | safe }}
-            <br>
-            <br>
-            <div id="taglist"></div>
-            <br>
-            <h4>{{ qdata.comments.count }} Comments</h4>
-            <hr>
-  
-            <!-- comments -->
-            {% for comment in qdata.comments.all %}
-            {{ comment.commentbody | safe }} - <a href="/u/{{ question.author_id }}" style="font-size: 14px">{{ comment.author }}</a>
-            <hr>
-            {% endfor %}
+            </div>
 
             <br>
             <button class="btn btn-primary" onclick="showCommentDialog()">Add comment</button>
@@ -85,12 +105,13 @@
             <br>
             <h4>{{ qdata.answers.count }} Answers</h4>
             <hr>
+            <br>
             <div class="row">
                 {% if user.is_authenticated %}
                     {% for answer in qdata.answers.all %}
                         <div class="col-md-1">
                             <h2><i class="fas fa-angle-up" id="up{{answer.id}}" style="cursor:pointer" onclick="upvote_update({{ answer.id }},{{ qdata.id }});"></i> <span id="uvcount">{{ answer.upvotes }}</span> </h2>
-                            <br>
+                            <!-- <br> -->
                             <h2><span id="dvcount">{{ answer.downvotes }}</span><i class="fas fa-angle-down" id="down{{answer.id}}" style="cursor:pointer" onclick="downvote_update({{answer.id}},{{qdata.id}})"></i></h2>
                         </div>
                         <div class="col-md-11">
@@ -107,7 +128,7 @@
                         <h2><i class="fas fa-angle-up" id="up{{answer.id}}" style="cursor:pointer" onclick="alert('Login to vote the answer')"></i>
                             <span id="uvcount">{{ answer.upvotes }}</span> </h2>
                     
-                        <br>
+                        <!-- <br> -->
                         <h2><span id="dvcount">{{ answer.downvotes }}</span><i class="fas fa-angle-down" id="down{{answer.id}}" style="cursor:pointer"
                                 onclick="alert('Login to vote the answer')"></i></h2>
                     
@@ -201,13 +222,13 @@
             </div>
 
             <!-- Side Widget -->
-            <!-- <div class="card my-4">
-                <h5 class="card-header">Side Widget</h5>
-                <div class="card-body">
+            <div class="card my-4">
+                <h5 class="card-header">Related Question</h5>
+                <div class="card-body" id ="related_content" >
                     You can put anything you want inside of these side widgets. They are easy to use, and feature the
                     new Bootstrap 4 card containers!
                 </div>
-            </div> -->
+            </div>
 
         </div>
 
@@ -220,10 +241,11 @@
 
 <!-- upvote downvote ajax functions -->
 <script>
-  function related_tag(relate_tag){
-    console.log(relate_tag);
-    alert("okk"+relate_tag.split(",")[0]);
-     var tag=relate_tag.split(",")[0];
+  function related_tag(){
+    var relate_tag = $("#tag_pane").text();
+    console.log(typeof relate_tag);
+    //alert("okk"+relate_tag.split(",")[0]);
+    var tag=relate_tag.split(",")[0];
     $.ajax({
         url: '/q/tag_route/',
         data: {
@@ -236,18 +258,53 @@
           }
           else if (data){
             txt="";
+            //alert({{pathname}});
             for(var i=0;i<Math.min(10,(data.question).length);i++)
             {
                 // txt += "<a onclick='"window.location = "+" / q / "+data.question_id[i]+" / "+data.question[i]+"'"+">"+data.question_title[i]+"</a><br>";
-                txt+=("<a onclick=window.location='q/"+data.question.id[i]+"/"+data.question[i]+"'>"+data.question_title[i]+"</a><br>");
+                txt+="<a href='/q/"+data.question_id[i] +'/'+data.question[i]+"'>"+data.question_title[i]+"</a><br>";
             }
-            $("#related_tag_content").html("<p>"+txt+"</p>");
+            $("#related_content").html("<p>"+txt+"</p>");
            
        }
       }
     });
   
   }
+
+  function question_upvote_update(question_id){
+    //alert("okk"+question_id);
+    //var btn = $("#up"+question_id);
+    var res = $("#quvcount");
+    $.ajax({
+        url: '/q/question_upvote_route/',
+        data: {
+          'question_id':question_id
+        },
+        dataType: 'json',
+        success: function (data) {
+          if (data)
+           res.text(data.votes);
+        }
+      });
+    }
+    function question_downvote_update(question_id){
+    // alert("okk"+question_id);
+    //var btn = $("#");
+    var res = $("#qdvcount");
+    $.ajax({
+        url: '/q/question_downvote_route/',
+        data: {
+          'question_id':question_id
+        },
+        dataType: 'json',
+        success: function (data) {
+          if (data)
+           res.text(data.votes);
+        }
+      });
+    }
+
 	function upvote_update(answer_id,question_id){
     
     var btn = $("#up"+answer_id);
@@ -300,7 +357,7 @@
                 }
                 else if (data) {
                     txt = ""
-                    for (var i = 0; i < (data.question).length; i++)
+                    for (var i = 0; i < Math.min(10,(data.question).length); i++)
                         txt += "<a href=" + data.question[i] + ">" + data.question_title[i] + "</a><br>"
                 }
                 $("#tag_fliter_content").html("<p>" + txt + "</p>")
@@ -309,40 +366,38 @@
             }
         });
     }
-    $(function ($) {
-            let words = [
-                { text: "Lorem", weight: 13, link: 'http://github.com/mistic100/jQCloud' },
-                { text: "Ipsum", weight: 10.5, link: 'http://www.strangeplanet.fr' },
-                { text: "Dolor", weight: 9.4, link: 'http://piwigo.org' },
-                { text: "Sit", weight: 8 },
-                { text: "Amet", weight: 6.2 },
-                { text: "Consectetur", weight: 5 },
-                { text: "Adipiscing", weight: 5 },
-                { text: "Lorem", weight: 13, link: 'http://github.com/mistic100/jQCloud' },
-                { text: "Ipsum", weight: 10.5, link: 'http://www.strangeplanet.fr' },
-                { text: "Dolor", weight: 9.4, link: 'http://piwigo.org' },
-                { text: "Sit", weight: 8 },
-                { text: "Amet", weight: 6.2 },
-                { text: "Consectetur", weight: 5 },
-                { text: "Adipiscing", weight: 5 },
-                { text: "Lorem", weight: 13, link: 'http://github.com/mistic100/jQCloud' },
-                { text: "Ipsum", weight: 10.5, link: 'http://www.strangeplanet.fr' },
-                { text: "Dolor", weight: 9.4, link: 'http://piwigo.org' },
-                { text: "Sit", weight: 8 },
-                { text: "Amet", weight: 6.2 },
-                { text: "Consectetur", weight: 5 },
-                { text: "Adipiscing", weight: 5 },
-            ];
-            $('#tagcloud').jQCloud(words, {
-                width: 400,
-                height: 400,
-                center: { x: 0.3, y: 0.45 },
-                delay: 40,
-                shape: 'rectangular'
-            });
 
-        });
-    
+    function top_tag() {
+            $.ajax({
+                url: '/q/top_tag/',
+                data: {
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data) {
+                        // console.log(data);
+                        let words = [];
+                        for (var i = 0; i < data.tags.length; i++)
+                            words.push({ text: data.tags[i].tag, weight: 40 - 3 * i, link: "/u" });
+                        //     txt+='<li><a data-weight="40" style="font-size: 29.64ex" >'+data.tags[i].tag+'</a></li>';
+                        // txt+="</ul>";
+                        // $("#tags").html(txt);
+                        $('#tagcloud').jQCloud(words, {
+                            width: 400,
+                            height: 400,
+                            center: { x: 0.3, y: 0.4 },
+                            delay: 40,
+                            shape: 'rectangular'
+                        });
+
+
+
+
+
+                    }
+                }
+            });
+        }
     // showing tags of question
     $(function(){
         var qtags='{{ qdata.tags }}';
@@ -356,6 +411,7 @@
         $("#taglist").html(txt);
     });
     // console.log('{{ qdata.tags }}');
+
 </script>
 
 

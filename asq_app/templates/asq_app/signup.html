@@ -9,6 +9,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="ask about mnnit ">
   <meta name="author" content="no one">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
     crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -24,7 +25,11 @@
   {% if user.is_authenticated %}
   <script>alert("you are already logged in!!"); window.location = "/q/"</script>
   {% endif %}
-
+<!-- 
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Send message">
+</form> -->
   <div class="container">
 
 
@@ -60,7 +65,7 @@
 
       <div class="row omb_row-sm-offset-3">
         <div class="col-xs-12 col-sm-6">
-          <form class="omb_loginForm" autocomplete="off" action="" method="POST">
+          <form class="omb_loginForm"   method="POST">
             {% csrf_token %}
 
             {% for field in form %}
@@ -182,7 +187,7 @@
   {% endif %}
 {% endif %}
 
-<form method="post" action="{% url 'login' %}">
+<form method="post" action="{% url 'login' %}" >
 {% csrf_token %}
 
 <div>

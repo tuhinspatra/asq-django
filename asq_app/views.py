@@ -87,7 +87,6 @@ def ansForm(request):
         return render(request,'asq_app/ansform.html',{'ansform':ansform})
 
 
-
 def tag_filter(request):
     tag_name=request.GET.get('tag')
     try:
@@ -136,6 +135,22 @@ def top_tag(request):
         data = {'question':"None"}    
     return JsonResponse(data)
 
+def top_question(request):
+    
+    try:
+        question_list = []
+        questions = Question.objects.values('upvotes','id','title','slug').order_by('upvotes')
+       
+        for question in questions:
+            question_list.append(question)
+        #tag_list.sort()
+        question = sorted(question_list, key = lambda i: i['upvotes'],reverse=True)
+
+        data = {'questions':question[:min(len(question),20)]}    
+    except Question.DoesNotExist:
+        data = {'questions':"None"}    
+    return JsonResponse(data)
+
                         
 def upvoter(request):
     answer_id = request.GET.get('answer_id')
@@ -156,6 +171,44 @@ def upvoter(request):
         UserVoteDetail.objects.create(answer=answer_id,question=question_id,user=request.user,upvote=True)
         answer.save()
     qdata = {'votes':answer.upvotes}
+    return JsonResponse(qdata)
+
+def question_upvote_route(request):
+    question_id = request.GET.get('question_id')
+    try:
+        question = Question.objects.get(pk=question_id)
+        status = UserVoteDetail.objects.get(answer=0,question=question_id,user=request.user)
+    except UserVoteDetail.DoesNotExist:
+        status=None             
+    if status != None:
+        if not status.downvote:
+            question.upvotes-=1
+            question.save()
+            status.delete()
+    else:
+        question.upvotes += 1;
+        UserVoteDetail.objects.create(answer=0,question=question_id,user=request.user,upvote=True)
+        question.save()
+    qdata = {'votes':question.upvotes}
+    return JsonResponse(qdata)
+
+def question_downvote_route(request):
+    question_id = request.GET.get('question_id')
+    try:
+        question = Question.objects.get(pk=question_id)
+        status = UserVoteDetail.objects.get(answer=0,question=question_id,user=request.user)
+    except UserVoteDetail.DoesNotExist:
+        status=None             
+    if status != None:
+        if not status.downvote:
+            question.upvotes-=1
+            question.save()
+            status.delete()
+    else:
+        question.upvotes += 1;
+        UserVoteDetail.objects.create(answer=0,question=question_id,user=request.user,upvote=True)
+        question.save()
+    qdata = {'votes':question.upvotes}
     return JsonResponse(qdata)
 
 def downvoter(request):
@@ -191,6 +244,10 @@ def signup(request):
             login(request, user)
             # return reverse('IndexView.as_view()')
             return redirect('/q/')
+        else:
+            form = SignUpForm(request.POST)
+            print(form)
+            return render(request, 'asq_app/signup.html', {'form': form})
 
     else:
         form = SignUpForm()
@@ -282,20 +339,33 @@ def notification_updates(request):
     try:
         
         for notify in Notification.objects.filter(received_by=request.user,new_notification=True):
-            notification.append(notify.question)
-            isans.append(notify.isans) 
+            if notify.isans == True:
+                notification.append(notify.question)
+            elif notify.iscomment == True:
+                isans.append(notify.question) 
             # print(notify)
     except Notification.DoesNotExist:
         notification = []
     # print(notification)    
     #data = {notification:notification}
     notify_serialized = serializers.serialize('json',notification)
+    notify_serialize = serializers.serialize('json',isans)
 
-    return JsonResponse(notify_serialized,safe=False)            
+    return JsonResponse({'notify_serialized':notify_serialized,'notify_serialize':notify_serialize},safe=False)            
 
-def delete_notification(request):
+def delete_comment_notification(request):
     notification_id = request.GET.get('qid')
-    for notify in Notification.objects.filter(question_id=notification_id,new_notification=True):
+    for notify in Notification.objects.filter(question_id=notification_id,iscomment=True,new_notification=True):
+        notify.new_notification=False
+        notify.save()
+
+    data={'status':"successfully deleted"}
+    return JsonResponse(data)            
+
+
+def delete_answer_notification(request):
+    notification_id = request.GET.get('qid')
+    for notify in Notification.objects.filter(question_id=notification_id,isans=True,new_notification=True):
         notify.new_notification=False
         notify.save()
 

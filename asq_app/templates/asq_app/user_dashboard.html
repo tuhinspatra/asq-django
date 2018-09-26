@@ -121,7 +121,7 @@
             }
           else {
             txt="";
-            for(var i=0;i<(data.user).length;i++)
+            for(var i=0;i<Math.min(10,(data.user).length);i++)
                  txt+="<a href='"+data.user[i]+"'>"+data.username[i]+"</a><br>";
           
             $("#user_result").html("<p>"+txt+"</p>");

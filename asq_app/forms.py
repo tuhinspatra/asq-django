@@ -5,7 +5,7 @@ from django.db import models
 from django.forms import ModelForm
 from .models import Question,Answer,QComment
 from froala_editor.widgets import FroalaEditor
-
+from django.views.generic.edit import FormView
 
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
@@ -63,4 +63,5 @@ class CommentForm(ModelForm):
         model = QComment
         fields = ['commentbody']        
 		
+
 

@@ -86,7 +86,6 @@ class QComment(models.Model):
     def __str__(self):
         return self.commentbody[:20]
 
-    
 
 class UserDashBoard(models.Model):
     user = models.ForeignKey('auth.User',on_delete = models.CASCADE)
@@ -124,4 +123,6 @@ class Notification(models.Model):
         elif self.iscomment == True:
             return self.created_by.get_username()+" commented on "+self.question.title
 
+# class StandardTags(models.Model):
+#     standardTags = models.CharField(max_length=200,blank=False)
 
