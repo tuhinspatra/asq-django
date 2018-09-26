@@ -108,7 +108,11 @@
     </div>
     <!-- @@ container div end @@ -->
 {% else %}
-<p>No Questions are available.</p>
+<h1 style="text-align:center;"><br><br>Phew! No questions are available.</h1>
+{% if user.is_authenticated %}
+<button type="button" style="margin: 200px;" class="btn btn-primary active" onclick="changePage()">Add
+    Question</button>
+{% endif %}
 {% endif %}
 
 <script>
@@ -190,14 +194,9 @@
                 delay: 40,
                 shape: 'rectangular'
             });
-
-
-            
-            
-           
-       }
-       }
-      });
+        }
+        }
+    });
 }
     
 

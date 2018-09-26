@@ -10,7 +10,7 @@ from django.views.generic.edit import FormView
 class SignUpForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
     last_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
-    email = forms.EmailField(max_length=254, help_text='Required. Esnter a valid email address.')
+    email = forms.EmailField(max_length=254, help_text='Required. Enter a valid email address.')
 
     class Meta:
         model = User
@@ -34,12 +34,17 @@ class SignUpForm(UserCreationForm):
 class AskForm(ModelForm):
     class Meta:
         model = Question
-        widgets = {'tags': forms.HiddenInput,}
         fields = ['title','body','tags']
+        widgets = {
+            'tags':forms.HiddenInput,
+        }
 
-    # def __init__(self,*args,**kwargs):
-    #     super().__init__(*args,**kwargs)
-    #     self.fields['result'].widget.attrs.update({'name':'result'})
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.fields['title'].widget.attrs.update({'class': 'form-control', 'onfocus':'showTitleInstructions()', 'placeholder':'Add title to your question. Be specific.'})
+        self.fields['body'].widget.attrs.update({'cols': '60', 'rows':'25','id':'id_commentbody'})
+        
+
 
 class AnsForm(ModelForm):
     body = forms.CharField(widget=FroalaEditor(options={

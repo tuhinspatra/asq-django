@@ -21,8 +21,10 @@
       </script>
 {% endif %}
 
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-  <link href="{% static 'css/login.css' %}"  rel="stylesheet">
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<link href="{% static 'css/login.css' %}"  rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap-social.css' %}"  rel="stylesheet">
 </head>
 
 <body>
@@ -46,23 +48,17 @@
   <div class="omb_login">
     <h3 class="omb_authTitle">Login</h3>
     <div class="row omb_row-sm-offset-3 omb_socialButtons">
-      <div class="col-xs-4 col-sm-2">
-        <a href="#" class="btn btn-lg btn-block omb_btn-facebook">
-          <!-- <i class="fa fa-facebook visible-xs"></i> -->
-          <i class="fab fa-facebook-square "></i>
-          <span class="hidden-xs">Facebook</span>
+    
+      <div class="col-xs-4 col-sm-3">
+        <a href="{% url 'social:begin' 'github' %}" class="btn btn-lg btn-block btn-social btn-github ">
+          <i class="fab fa-github"></i>
+          <span class="hidden-xs">Sign in with Github</span>
         </a>
       </div>
-      <div class="col-xs-4 col-sm-2">
-        <a href="#" class="btn btn-lg btn-block omb_btn-twitter">
-          <i class="fab fa-twitter"></i>
-          <span class="hidden-xs">Twitter</span>
-        </a>
-      </div>
-      <div class="col-xs-4 col-sm-2">
-        <a href="#" class="btn btn-lg btn-block omb_btn-google">
+      <div class="col-xs-4 col-sm-3">
+        <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-lg btn-block btn-social btn-google">
           <i class="fab fa-google-plus-g"></i>
-          <span class="hidden-xs">Google+</span>
+          <span class="hidden-xs">Sign in with Google</span>
         </a>
       </div>
     </div>

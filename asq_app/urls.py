@@ -17,7 +17,8 @@ urlpatterns = [
     url(r'^tag_route/$', views.tag_filter,name='tag_route'),
     url(r'^top_tag/$', views.top_tag),
     url(r'^top_question/$', views.top_question),
-     url(r'^downvote_route/$', views.downvoter),
+    url(r'^downvote_route/$', views.downvoter),
+    url(r'^recommend_tags', views.recommendTags),
      #path('dashboard', views.user_dashboard, name='user_dashboard'),
      path('<int:qid>/<slug:slug>', views.detail, name='question_detail'),
 

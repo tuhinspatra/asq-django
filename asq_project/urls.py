@@ -30,6 +30,7 @@ urlpatterns += [
     path('q/', include('asq_app.urls')),
     path('u/<int:uid>',views.common_user_dashboard,name='common_user_dashboard'),
     url(r'^u/$',views.user_dashboard,name='user_dashboard'),
+    url(r'^auth/', include('social_django.urls', namespace='social')),  # <- Here
     url(r'^search/', include('haystack.urls')),
     url(r'^froala_editor/', include('froala_editor.urls')),
 ]

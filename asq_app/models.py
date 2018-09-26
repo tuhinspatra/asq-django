@@ -7,8 +7,10 @@ from django.urls import reverse
 
 # Create your models here.
 
+
 class Question(models.Model):
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    author_name = models.CharField('author_name', max_length=1000, default='')
     title = models.CharField('title', max_length=255)
     slug = models.SlugField(unique=True, max_length=255)
     # tags = models.CharField('tags',widget=forms.TextInput(attrs={'type':'text','class':'labelinput'}),max_length=1000)
@@ -35,11 +37,11 @@ class Question(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
         self.last_modified_on = timezone.now()
+        self.author_name = self.author.username
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('asq_app:question_detail', kwargs={'slug': self.slug})
-        #return reverse('question_details', kwargs={'pk': self.id})
+        return reverse('asq_app:question_detail', kwargs={'qid':self.id, 'slug': self.slug})
 
 
 class Answer(models.Model):

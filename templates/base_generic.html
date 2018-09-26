@@ -9,10 +9,10 @@
     <meta name="description" content="ask about mnnit " >
     <meta name="author" content="no one">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <!-- <link href="{% static 'bs4/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
-    <script src="{% static 'bs4/bootstrap.min.css' %}"></script> -->
+    <!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script> -->
+    <link href="{% static 'bs4/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    <script src="{% static 'bs4/js/bootstrap.min.js' %}"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
       crossorigin="anonymous">
     <link href="{% static 'asq_project/froala_editor/css/froala_editor.min.css' %}" type="text/css" media="all" rel="stylesheet" />
@@ -24,6 +24,8 @@
     <link rel="stylesheet" type="text/css" href="{% static 'vendor/easy-ac/easy-autocomplete.themes.min.css.map' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'vendor/easy-ac/easy-autocomplete.themes.min.css.map' %}">
     <script src="{% static 'vendor/easy-ac/jquery.easy-autocomplete.min.js' %}"></script>
+    <!-- <link rel="stylesheet" href="{% static 'asq_project/autocomplete.min.css' %}" type="text/css"> -->
+    <!-- <script src="{% static 'asq_project/autocomplete.min.js' %}"></script> -->
 
     <script>
         function getCookie(cname) {
@@ -80,9 +82,9 @@
             <!-- search bar -->
              <li class="nav-item">
                 <div class="input-group">
-                  <input type="text" class="form-control" id="qbox" placeholder="Search">
+                  <input type="text" class="form-control" id="qbox" style="" placeholder="Search">
                   <div class="input-group-append">
-                    <button class="btn btn-primary" onclick="open_search()"  type="submit"><i class="fas fa-search"></i></button>
+                    <button class="btn btn-primary"  type="submit"><i class="fas fa-search"></i></button>
                   </div>
                 </div>
             </li>
@@ -132,7 +134,7 @@
     <!-- default content text (typically empty) -->
     {% endblock %}
 
-    <footer ><hr>(c) 2018 Team django-unchained Webster 2018 </footer>
+    <footer ><hr>(c) Team Django Unchained Webster 2018 </footer>
  <!-- 
     <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
@@ -229,9 +231,9 @@ function notification_answer_update(qid) {
 
 
   let querybox = $('#qbox');
-  function open_search() {
-    window.location = "/search/?q=" + querybox.val();
-  }
+  // function open_search() {
+  //   window.location = "/search/?q=" + querybox.val();
+  // }
 
   var options = {
 
@@ -248,7 +250,7 @@ function notification_answer_update(qid) {
 
     list: {
       match: {
-        enabled: true
+        enabled: false,
       },
       showAnimation: {
         type: "slide", //normal|slide|fade
@@ -262,34 +264,10 @@ function notification_answer_update(qid) {
         callback: function () { }
       },
     },
-    placeholder: "Search...",
+    placeholder: "Search questions, authors, tags and more...",
     theme: "blue-light"
   };
 
-  querybox.keydown(function (e) {
-    if (e.keyCode == 13) {
-      // alert(querybox.val());
-      open_search();
-      // function notification_update(qid) {
-      //       ///alert(qid);
-      //       $.ajax({
-      //         url: '/q/delete_notification/',
-      //         data: {
-      //             'qid':qid
-      //         },
-      //         dataType: 'json',
-      //         success: function (data) {
-      //             if(data){
-      //               alert("okk" +data);
-      //           }
-            
-      //   }
-      //       });
-      //     // body...
-      // }
-    }
-  } 
-);
 
 </script>
 

@@ -167,7 +167,8 @@
                     {% if user.is_authenticated%}
                         <form method="post">
                             {% csrf_token %}
-                            <textarea name="body" cols="40" rows="10" required id="id_body"></textarea>
+                            {{ ansform }}
+                            <!-- <textarea name="body" cols="40" rows="10" required id="id_body"></textarea> -->
                             <script>
                                 $(function () {
                                     $('#id_body').froalaEditor({ "inlineMode": false, "imageUploadURL": "/froala_editor/image_upload/", "imageUploadParams": { "csrfmiddlewaretoken": getCookie("csrftoken") }, "fileUploadURL": "/froala_editor/file_upload/", "fileUploadParams": { "csrfmiddlewaretoken": getCookie("csrftoken") }, "toolbarInline": false, "image_upload": true, "height": 200, "width": 600 })
