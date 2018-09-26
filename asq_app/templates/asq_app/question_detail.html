@@ -20,6 +20,7 @@
      $(document).ready(function () {
        related_tag();
        top_tag();
+      
     });
 
 </script>
@@ -241,11 +242,34 @@
 
 <!-- upvote downvote ajax functions -->
 <script>
+
+   // function btn_color(){
+   //   alert({{qdata.id}});
+   //   question_id = {{qdata.id}} ;
+
+   //    $.ajax({
+   //      url: '/q/question_btn_color/',
+   //      data: {
+   //        'question_id':question_id
+   //      },
+   //      dataType: 'json',
+   //      success: function (data) {
+   //        if (data)
+   //          console.log(data);
+   //         alert("done"+data);
+   //      }
+   //    });
+
+
+   // }
+
   function related_tag(){
-    var relate_tag = $("#tag_pane").text();
-    console.log(typeof relate_tag);
+   // var relate_tag = $("#tag0").text();
+   var qtags='{{ qdata.tags }}';
+        var tags=qtags.split(',');
+    console.log(tags);
     //alert("okk"+relate_tag.split(",")[0]);
-    var tag=relate_tag.split(",")[0];
+    var tag=tags[0];
     $.ajax({
         url: '/q/tag_route/',
         data: {

@@ -106,6 +106,15 @@ class TagSearch(models.Model):
         return self.tag
 
 
+class UserDetails(models.Model):
+    user = models.ForeignKey('auth.User',on_delete=models.CASCADE)
+    profile_pic = models.ImageField(default=0, blank=True)
+    reputation = models.IntegerField(default=0)
+
+
+    def __str__(self):
+        return self.user.username
+
 class Notification(models.Model):
     created_by = models.ForeignKey('auth.User',on_delete=models.CASCADE,related_name='created_by') 
     received_by = models.ForeignKey('auth.User',on_delete=models.CASCADE,related_name='received_by')

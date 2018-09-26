@@ -4,18 +4,18 @@ from django.urls import reverse
 from django.views import generic
 from django.contrib.auth.models import User
 from .forms import AskForm ,AnsForm,CommentForm
-from .models import Answer, Question,UserVoteDetail,QComment,TagSearch,Notification 
+from .models import Answer, Question,UserVoteDetail,QComment,TagSearch,Notification ,UserDetails
 import json
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from django.core import serializers
-from .forms import SignUpForm
+from .forms import SignUpForm,UserPhotoForm
 from . import views
 from django.conf import settings
 from haystack.query import SearchQuerySet
 from haystack.inputs import BaseInput, Clean
 from django.db.models import Count
-
+from django.contrib.auth.decorators import login_required
 class IndexView(generic.ListView):
     template_name = 'asq_app/index.html'
     context_object_name = 'latest_question_list'
@@ -200,15 +200,15 @@ def question_downvote_route(request):
     except UserVoteDetail.DoesNotExist:
         status=None             
     if status != None:
-        if not status.downvote:
-            question.upvotes-=1
+        if not status.upvote:
+            question.downvotes-=1
             question.save()
             status.delete()
     else:
-        question.upvotes += 1;
-        UserVoteDetail.objects.create(answer=0,question=question_id,user=request.user,upvote=True)
+        question.downvotes += 1;
+        UserVoteDetail.objects.create(answer=0,question=question_id,user=request.user,downvote=True)
         question.save()
-    qdata = {'votes':question.upvotes}
+    qdata = {'votes':question.downvotes}
     return JsonResponse(qdata)
 
 def downvoter(request):
@@ -232,6 +232,7 @@ def downvoter(request):
     qdata = {'votes':answer.downvotes}
     return JsonResponse(qdata)	
 
+
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -253,89 +254,30 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'asq_app/signup.html', {'form': form})
 
-def user_dashboard(request):
-    user = request.user.id
-    upvote = 0
-    downvote = 0
+def reputation_update(request):
+    user = request.GET.get('user')
+    print(user)
+    reputation = request.GET.get('reputation')
     try:
-        user = User.objects.get(id=user)
-    except User.DoesNotExist:
-        user = None
-    question = []
-    try:
-        for q in Question.objects.filter(author_id=user):
-            question.append(q)
-    except Question.DoesNotExist:
-        question=[]
-    answer =[]
-    try:
-        for ans in Answer.objects.filter(author_id=user):
-            answer.append(ans)
-            upvote += UserVoteDetail.objects.filter(answer=ans.id,user=request.user,upvote=True).count()
-            downvote += UserVoteDetail.objects.filter(answer=ans.id,user=request.user,downvote=True).count()
-
-    except Answer.DoesNotExist:
-        answer=[]        
-    comment =[]
-    try:
-        for c in QComment.objects.filter(author_id=user):
-            comment.append(c)
-    except QComment.DoesNotExist:
-        comment=[]        
-    data = {
-    'question':question,
-    'answer':answer,
-    'comment':comment,
-    'user':user,
-    'upvote':upvote,
-    'downvote':downvote
-    }
-    #print(upvote)
-    return render(request,'asq_app/user_dashboard.html',data)    
-
-def common_user_dashboard(request,uid):
-    upvote = 0
-    downvote = 0
-    try:
-        user = User.objects.get(id=uid)
-    except User.DoesNotExist:
-        user = None
-    question = []
-    try:
-        for q in Question.objects.filter(author_id=uid):
-            question.append(q)
-    except Question.DoesNotExist:
-        question=[]
-    answer =[]
-    try:
-        for ans in Answer.objects.filter(author_id=uid):
-            answer.append(ans)
-            upvote += UserVoteDetail.objects.filter(answer=ans.id,user=user,upvote=True).count()
-            downvote += UserVoteDetail.objects.filter(answer=ans.id,user=user,downvote=True).count()
-
-    except Answer.DoesNotExist:
-        answer=[]        
-    comment =[]
-    try:
-        for c in QComment.objects.filter(author_id=uid):
-            comment.append(c)
-    except QComment.DoesNotExist:
-        comment=[]        
-    data = {
-    'question':question,
-    'answer':answer,
-    'comment':comment,
-    'user':user,
-    'upvote':upvote,
-    'downvote':downvote
-    }
-    return render(request,'asq_app/user_dashboard.html',data)    
+        userdetails = UserDetails.objects.get(user=user)
+        userdetails.reputation = reputation
+        userdetails.save()
+        print("updated")
+    except UserDetails.DoesNotExist:
+        print("created")
+        user_model=User.objects.get(id=user)
+        userdetails = UserDetails.objects.create(user=user_model,profile_pic='',reputation=reputation)
+        userdetails.save()
+    data={}
+    return JsonResponse(data)
+        
 
 
 
 def notification_updates(request):
     notification = []
     isans =[]
+    author = []
     try:
         
         for notify in Notification.objects.filter(received_by=request.user,new_notification=True):
@@ -343,15 +285,18 @@ def notification_updates(request):
                 notification.append(notify.question)
             elif notify.iscomment == True:
                 isans.append(notify.question) 
-            # print(notify)
+            print(notify.question.author.id)
+            author.append(User.objects.get(id=notify.question.author.id).username) 
+            print(author)
     except Notification.DoesNotExist:
         notification = []
     # print(notification)    
     #data = {notification:notification}
     notify_serialized = serializers.serialize('json',notification)
     notify_serialize = serializers.serialize('json',isans)
+   # author_list = serializers.serialize('json',author)
 
-    return JsonResponse({'notify_serialized':notify_serialized,'notify_serialize':notify_serialize},safe=False)            
+    return JsonResponse({'author':author,'notify_serialized':notify_serialized,'notify_serialize':notify_serialize},safe=False)            
 
 def delete_comment_notification(request):
     notification_id = request.GET.get('qid')
@@ -361,6 +306,7 @@ def delete_comment_notification(request):
 
     data={'status':"successfully deleted"}
     return JsonResponse(data)            
+
 
 
 def delete_answer_notification(request):
@@ -408,3 +354,101 @@ def search_titles(request):
 
     print(response)
     return JsonResponse(response, safe=False)
+
+
+#@login_required(login_url="/accounts/")
+
+def user_dashboard(request):
+    # photo_form = UserPhotoForm()
+    # if request.method == 'POST':
+    #     photo_form = UserPhotoForm(request.POST, request.FILES)
+    #     print(photo_form.clean_image)
+    #     if photo_form.is_valid():
+    #         if photo_form.clean_image != 0:
+    #             instance = photo_form.save(commit=False)
+    #             instance.user = request.user
+    #             instance.save()
+    #             photo_form = instance
+    #         else:
+    #             photo_form = UserDetails.objects.get(user=request.user)
+    #         print("okk done")
+    user = request.user.id
+    upvote = 0
+    downvote = 0
+    try:
+        user = User.objects.get(id=user)
+    except User.DoesNotExist:
+        user = None
+    question = []
+    try:
+        for q in Question.objects.filter(author_id=user):
+            question.append(q)
+    except Question.DoesNotExist:
+        question=[]
+    answer =[]
+    try:
+        for ans in Answer.objects.filter(author_id=user):
+            answer.append(ans)
+            upvote += UserVoteDetail.objects.filter(answer=ans.id,user=request.user,upvote=True).count()
+            downvote += UserVoteDetail.objects.filter(answer=ans.id,user=request.user,downvote=True).count()
+
+    except Answer.DoesNotExist:
+        answer=[]        
+    comment =[]
+    try:
+        for c in QComment.objects.filter(author_id=user):
+            comment.append(c)
+    except QComment.DoesNotExist:
+        comment=[]        
+    data = {
+    'question':question,
+    'answer':answer,
+    'comment':comment,
+    'user':user,
+    'upvote':upvote,
+    'downvote':downvote
+    }
+    #print(upvote)
+    return render(request,'asq_app/user_dashboard.html',data)    
+
+
+def common_user_dashboard(request,uid):
+    upvote = 0
+    downvote = 0
+    try:
+        user = User.objects.get(id=uid)
+    except User.DoesNotExist:
+        user = None
+    question = []
+    try:
+        for q in Question.objects.filter(author_id=uid):
+            question.append(q)
+    except Question.DoesNotExist:
+        question=[]
+    answer =[]
+    try:
+        for ans in Answer.objects.filter(author_id=uid):
+            answer.append(ans)
+            upvote += UserVoteDetail.objects.filter(answer=ans.id,user=user,upvote=True).count()
+            downvote += UserVoteDetail.objects.filter(answer=ans.id,user=user,downvote=True).count()
+
+    except Answer.DoesNotExist:
+        answer=[]        
+    comment =[]
+    try:
+        for c in QComment.objects.filter(author_id=uid):
+            comment.append(c)
+    except QComment.DoesNotExist:
+        comment=[]        
+    data = {
+    'question':question,
+    'answer':answer,
+    'comment':comment,
+    'user':user,
+    'upvote':upvote,
+    'downvote':downvote
+  
+    }
+    return render(request,'asq_app/user_dashboard.html',data)    
+
+
