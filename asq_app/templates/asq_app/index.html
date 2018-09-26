@@ -24,7 +24,7 @@
                         {% if user.is_authenticated %}
                             <button type="button" style="float:right;margin-top: 24px;" class="btn btn-primary active" onclick="changePage()">Add Question</button>
                         {% else %}
-                            <button type="button" style="float:right;margin-top: 24px;cursor: not-allowed;" class="btn btn-primary disabled" >Add Question</button>
+                            <button type="button" style="float:right;margin-top:availa 24px;cursor: not-allowed;" class="btn btn-primary disabled" >Add Question</button>
                         {% endif %}
                     </div>
                 </div>
@@ -78,7 +78,11 @@
     </div>
     <!-- @@ container div end @@ -->
 {% else %}
-<p>No Questions are available.</p>
+<h1 style="text-align:center;"><br><br>Phew! No questions are available.</h1>
+{% if user.is_authenticated %}
+<button type="button" style="margin: 200px;" class="btn btn-primary active" onclick="changePage()">Add
+    Question</button>
+{% endif %}
 {% endif %}
 
 <script>

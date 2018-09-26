@@ -54,7 +54,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="/q">asq MNNIT</a>
+        <a class="navbar-brand" href="/q">Asq MNNIT</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -106,7 +106,7 @@
     <!-- default content text (typically empty) -->
     {% endblock %}
 
-    <footer ><hr>(c) 2018 Team django-unchained Webster 2018 </footer>
+    <footer ><hr>(c) Team Django Unchained Webster 2018 </footer>
  <!-- 
     <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
@@ -149,7 +149,7 @@ function get_new_notification(){
                console.log(JSON.parse(data));
                for(var i=0;i<data.length;i++)
                // if(received_data.)
-               $(".modal-body").append("some one comment or answer your question see more here<a href="+'/q/'+received_data[i].pk+"/"+received_data[i].fields.slug+" onclick='notification_update("+received_data[i].pk+");'"+">"+received_data[i].fields.title+"</a><br>");
+               $(".modal-body").append("Some one commented or answered on your question. See more here <a href="+'/q/'+received_data[i].pk+"/"+received_data[i].fields.slug+" onclick='notification_update("+received_data[i].pk+");'"+">"+received_data[i].fields.title+"</a><br>");
                ///alert("new notification received");
                }
        
@@ -177,7 +177,7 @@ function get_new_notification(){
 
     list: {
       match: {
-        enabled: true
+        enabled: false,
       },
       showAnimation: {
         type: "slide", //normal|slide|fade
@@ -191,34 +191,10 @@ function get_new_notification(){
         callback: function () { }
       },
     },
-    placeholder: "Search...",
+    placeholder: "Search questions, authors, tags and more...",
     theme: "blue-light"
   };
 
-  querybox.keydown(function (e) {
-    if (e.keyCode == 13) {
-      // alert(querybox.val());
-      open_search();
-      function notification_update(qid) {
-            ///alert(qid);
-            $.ajax({
-              url: '/q/delete_notification/',
-              data: {
-                  'qid':qid
-              },
-              dataType: 'json',
-              success: function (data) {
-                  if(data){
-                    alert("okk" +data);
-                }
-            
-        }
-            });
-          // body...
-      }
-    }
-  } 
-);
 
 </script>
 

@@ -135,6 +135,7 @@
     </div>
 
     {% for field in form %}
+    {{ field }}
     <p>
       {% for error in field.errors %}
       <p style="color: red">{{ field.label_tag }} {{ error }}</p>

@@ -15,6 +15,8 @@ from django.conf import settings
 from haystack.query import SearchQuerySet
 from haystack.inputs import BaseInput, Clean
 from django.db.models import Count
+from django.db.models import Q
+
 
 class IndexView(generic.ListView):
     template_name = 'asq_app/index.html'
@@ -309,12 +311,9 @@ class CustomContain(BaseInput):
         query_string = super(CustomContain, self).prepare(query_obj)
         query_string = query_obj.clean(query_string)
         exact_bits = [Clean(bit).prepare(query_obj)
-                    for bit in query_string.split(' ') if bit]
+                    for bit in query_string.split(',') if bit]
         query_string = u' '.join(exact_bits)
         return u'*{}*'.format(query_string)
-
-
-# Usage:
 
 
 def search_titles(request):
@@ -323,16 +322,43 @@ def search_titles(request):
         return JsonResponse({})
     sqs = SearchQuerySet()
     # results_custom = SearchQuerySet().filter(content=CustomContain(query))
-    # r2 = SearchQuerySet().filter(content=query)
-    results = SearchQuerySet().autocomplete(content_auto=query)
+    r2 = SearchQuerySet().filter(content=query)
+    # results = SearchQuerySet().autocomplete(content_auto=query)
     # spelling = sqs.spelling_suggestion(query)
     # results = serializers.serialize('json', results)
     response = []
-    for x in results:
+    # for x in results:
+    
+    # for x in r2:
+    #     obj = {
+    #         'title': '<p><span class="lead">' + str(x.object.title[:20]) + '</span>   by ' + str(x.object.author.username) + ' </p> <em>' + str(x.object.body[:20]) + '</em>',
+    #         'body': x.object.body[:30],
+    #         'website-link': reverse('asq_app:question_detail', kwargs={'qid':x.object.id,'slug': x.object.slug})
+    #     }
+    #     response.append(obj)
+
+    for x in Question.objects.filter(Q(title__icontains=query) | Q(body__icontains=query)):
         obj = {
-            'title': x.object.title,
-            'body': x.object.body[:30],
-            'website-link': reverse('asq_app:question_detail', kwargs={'qid':x.object.id,'slug': x.object.slug})
+            'title': '<p>' + str(x.title[:20]) + '   by ' + str(x.author.username) + ' </p> <em>' + str(x.body[:20]) + '</em>',
+            'body': x.body[:30],
+            'website-link': reverse('asq_app:question_detail', kwargs={'qid': x.id, 'slug': x.slug})
+        }
+        response.append(obj)
+
+    for x in User.objects.filter(username__icontains=query):
+        obj = {
+            'title': '<p> User: <em>' + x.username + '</em></p>',
+            'body': x.username,
+            'website-link': reverse('common_user_dashboard', kwargs={'uid': x.id})
+        }
+        response.append(obj)
+
+    for x in TagSearch.objects.filter(tag__icontains=query):
+        obj = {
+            'title': x.question_title + '<em> tagged ' + str(x) + '</em>',
+            'body': str(x),
+            'website-link': reverse('asq_app:question_detail', kwargs={'qid': x.question_id, 'slug': x.question_slug})
+
         }
         response.append(obj)
 
