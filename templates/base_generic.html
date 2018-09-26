@@ -136,7 +136,7 @@
   <script>
 function get_new_notification(){
     $(".modal-body").text("");
-    console.log("fg");
+   // console.log("fg");
     var tag= $("#tag").val();
     $.ajax({
         url: '/q/notification_route/',
@@ -145,17 +145,62 @@ function get_new_notification(){
         dataType: 'json',
         success: function (data) {
             if(data){
-              received_data=JSON.parse(data);
-               console.log(JSON.parse(data));
-               for(var i=0;i<data.length;i++)
-               // if(received_data.)
-               $(".modal-body").append("some one comment or answer your question see more here<a href="+'/q/'+received_data[i].pk+"/"+received_data[i].fields.slug+" onclick='notification_update("+received_data[i].pk+");'"+">"+received_data[i].fields.title+"</a><br>");
-               ///alert("new notification received");
+              received_ans=JSON.parse(data.notify_serialized);
+               console.log(received_ans);
+               received_comment=JSON.parse(data.notify_serialize);
+               console.log(received_comment);
+               for(var i=0;i<received_ans.length;i++)
+              if(received_ans)
+               $(".modal-body").append("user <a href=/u/"+received_ans[i].fields.author+">see profile</a>commented on your question<a href="+'/q/'+received_ans[i].pk+"/"+received_ans[i].fields.slug+" onclick='notification_answer_update("+received_ans[i].pk+");'"+">"+received_ans[i].fields.title+"</a><br>");
+               // ///alert("new notification received");
+               for(var i=0;i<received_comment.length;i++)
+               if(received_comment)
+               $(".modal-body").append("user <a href=/u/"+received_comment[i].fields.author+">see profile</a> answered your question <a href="+'/q/'+received_comment[i].pk+"/"+received_comment[i].fields.slug+" onclick='notification_comment_update("+received_comment[i].pk+");'"+">"+received_comment[i].fields.title+"</a><br>");
+               // ///alert("new notification received");
+
                }
        
    }
       });
     }
+
+
+  function notification_comment_update(qid) {
+            //alert(qid);
+            $.ajax({
+              url: '/q/delete_comment_notification/',
+              data: {
+                  'qid':qid
+              },
+              dataType: 'json',
+              success: function (data) {
+                  if(data){
+                    alert("okk" +data);
+                }
+            
+        }
+            });
+          // body...
+      }
+
+function notification_answer_update(qid) {
+           // alert(qid);
+            $.ajax({
+              url: '/q/delete_answer_notification/',
+              data: {
+                  'qid':qid
+              },
+              dataType: 'json',
+              success: function (data) {
+                  if(data){
+                    alert("okk" +data);
+                }
+            
+        }
+            });
+          // body...
+      }
+
 
   let querybox = $('#qbox');
   function open_search() {
@@ -199,23 +244,23 @@ function get_new_notification(){
     if (e.keyCode == 13) {
       // alert(querybox.val());
       open_search();
-      function notification_update(qid) {
-            ///alert(qid);
-            $.ajax({
-              url: '/q/delete_notification/',
-              data: {
-                  'qid':qid
-              },
-              dataType: 'json',
-              success: function (data) {
-                  if(data){
-                    alert("okk" +data);
-                }
+      // function notification_update(qid) {
+      //       ///alert(qid);
+      //       $.ajax({
+      //         url: '/q/delete_notification/',
+      //         data: {
+      //             'qid':qid
+      //         },
+      //         dataType: 'json',
+      //         success: function (data) {
+      //             if(data){
+      //               alert("okk" +data);
+      //           }
             
-        }
-            });
-          // body...
-      }
+      //   }
+      //       });
+      //     // body...
+      // }
     }
   } 
 );

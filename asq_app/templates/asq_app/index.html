@@ -5,6 +5,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
        top_tag();
+       top_question();
     });
 </script>
 
@@ -34,7 +35,7 @@
                     <div class="card-body">
                         <h5 class="card-title"><a href="{% url 'asq_app:question_detail' question.id question.slug %}">{{ question.title }}</a></h5>
                         <!-- <br> -->
-                        modified on {{ question.created_on }}
+                        modified on {{ question.created_on | date}}
                         <i class="fas fa-user"></i> by <a href="/u/{{ question.author_id }}">{{ question.author.username }}</a>
                         <i class="fas fa-pen-alt"></i> {{ question.answers.all.count }} answers
                     </div>
@@ -70,6 +71,15 @@
                        
                     </div>
                 </div>
+
+                <!-- Side Widget -->
+            <div class="card my-4">
+                <h5 class="card-header">Top Question</h5>
+                <div class="card-body" id ="top_question_content" >
+                    You can put anything you want insidex of these side widgets. They are easy to use, and feature the
+                    new Bootstrap 4 card containers!
+                </div>
+            </div>
             
             </div>
             <!-- @@ col-md-4 div end @@ -->
@@ -85,6 +95,10 @@
     function tag_fliter(){
    // alert("okk"+$("#tag").val());
      var tag= $("#tag").val();
+     if(tag.length == 0){
+      $("#tag_fliter_content").html("");
+         return;
+     }
     $.ajax({
         url: '/q/tag_route/',
         data: {
@@ -98,7 +112,7 @@
             }
           else if (data){
             txt="";
-            for(var i=0;i<(data.question).length;i++)
+            for(var i=0;i<Math.min(10,(data.question).length);i++)
                 txt+="<a href="+data.question_id[i]+"/"+data.question[i]+">"+data.question_title[i]+"</a><br>";
           
             $("#tag_fliter_content").html("<p>"+txt+"</p>");
@@ -107,8 +121,34 @@
    }
       });
     }
+
+     function top_question() {
+    $.ajax({
+        url: '/q/top_question/',
+        data: {
+        },
+        dataType: 'json',
+        success: function (data) {
+                 if(data.questions.length == 0){
+               txt="No Question Found";
+          }
+          else if (data){
+          
+            txt="";
+            //alert({{pathname}});
+            for(var i=0;i<Math.min(10,(data.questions).length);i++)
+            {
+                // txt += "<a onclick='"window.location = "+" / q / "+data.question_id[i]+" / "+data.question[i]+"'"+">"+data.question_title[i]+"</a><br>";
+                txt+="<a href='/q/"+data.questions[i].id +'/'+data.questions[i].slug+"'>"+data.questions[i].title+"</a><br>";
+            }
+            $("#top_question_content").html("<p>"+txt+"</p>");
+           
+       }
+       }
+      });
+}
     
-    function top_tag(){
+    function top_tag() {
     $.ajax({
         url: '/q/top_tag/',
         data: {
@@ -116,24 +156,24 @@
         dataType: 'json',
         success: function (data) {
             if(data){
-                  txt="<ul>"     ; 
-            for(var i=0;i<data.tags.length;i++)
-                txt+='<li><a data-weight="40" style="font-size: 29.64ex" >'+data.tags[i].tag+'</a></li>';
-            txt+="</ul>";
-            $("#tags").html(txt);
-             if (!$('#myCanvas').tagcanvas({
-            textColour: '#ff0000',
-            outlineColour: '#ff00ff',
-            reverse: true,
-            depth: 0.8,
-            maxSpeed: 0.3,
-            weight: true,
-            weightedMode: 'both',
-            weightSize: 0.6,
-        }, 'tags')) {
-            // something went wrong, hide the canvas container
-            $('#myCanvasContainer').hide();
-        }
+               // console.log(data);
+                 let words = []; 
+             for(var i=0;i<data.tags.length;i++)
+                words.push({text:data.tags[i].tag,weight:40-3*i,link:"/u"});
+            //     txt+='<li><a data-weight="40" style="font-size: 29.64ex" >'+data.tags[i].tag+'</a></li>';
+            // txt+="</ul>";
+            // $("#tags").html(txt);
+            $('#tagcloud').jQCloud(words, {
+                width: 400,
+                height: 400,
+                center: {x:0.4,y:0.4},
+                delay: 40,
+                shape: 'rectangular'
+            });
+
+
+            
+            
            
        }
        }
@@ -146,39 +186,6 @@
         window.location="/q/ask/";
     }
 
-    $(function ($) {
-            let words = [
-                { text: "Lorem", weight: 13, link: 'http://github.com/mistic100/jQCloud' },
-                { text: "Ipsum", weight: 10.5, link: 'http://www.strangeplanet.fr' },
-                { text: "Dolor", weight: 9.4, link: 'http://piwigo.org' },
-                { text: "Sit", weight: 8 },
-                { text: "Amet", weight: 6.2 },
-                { text: "Consectetur", weight: 5 },
-                { text: "Adipiscing", weight: 5 },
-                { text: "Lorem", weight: 13, link: 'http://github.com/mistic100/jQCloud' },
-                { text: "Ipsum", weight: 10.5, link: 'http://www.strangeplanet.fr' },
-                { text: "Dolor", weight: 9.4, link: 'http://piwigo.org' },
-                { text: "Sit", weight: 8 },
-                { text: "Amet", weight: 6.2 },
-                { text: "Consectetur", weight: 5 },
-                { text: "Adipiscing", weight: 5 },
-                { text: "Lorem", weight: 13, link: 'http://github.com/mistic100/jQCloud' },
-                { text: "Ipsum", weight: 10.5, link: 'http://www.strangeplanet.fr' },
-                { text: "Dolor", weight: 9.4, link: 'http://piwigo.org' },
-                { text: "Sit", weight: 8 },
-                { text: "Amet", weight: 6.2 },
-                { text: "Consectetur", weight: 5 },
-                { text: "Adipiscing", weight: 5 },
-            ];
-            $('#tagcloud').jQCloud(words, {
-                width: 400,
-                height: 400,
-                center: {x:0.4,y:0.4},
-                delay: 40,
-                shape: 'rectangular'
-            });
-
-        });
 </script>
 
 

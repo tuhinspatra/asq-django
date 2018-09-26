@@ -86,7 +86,6 @@ class QComment(models.Model):
     def __str__(self):
         return self.commentbody[:20]
 
-    
 
 class UserDashBoard(models.Model):
     user = models.ForeignKey('auth.User',on_delete = models.CASCADE)
