@@ -123,6 +123,11 @@ class Notification(models.Model):
         elif self.iscomment == True:
             return self.created_by.get_username()+" commented on "+self.question.title
 
-# class StandardTags(models.Model):
-#     standardTags = models.CharField(max_length=200,blank=False)
+class StandardTags(models.Model):
+    standardTags = models.CharField(max_length=200,blank=False)
+    def __str__(self):
+        if self.standardTags:
+            return self.standardTags
+        else:
+            return ""
 
