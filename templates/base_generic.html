@@ -43,61 +43,87 @@
     </script>
 
      <link rel="stylesheet" type="text/css" href="{% static 'asq_project/tagInput.css' %}">
-    <script src="{% static 'asq_project/tagInput.js' %}"></script>
-     <!-- Custom styles for this template -->
-    <link href="{% static 'css/blog-home.css' %}" rel="stylesheet">
+      <script src="{% static 'asq_project/tagInput.js' %}"></script>
+      <!-- Custom styles for this template -->
+      <link href="{% static 'css/blog-home.css' %}" rel="stylesheet">
+
+    <style>
+      hr
+      {
+          margin:0px;
+      }
+      p{
+        margin:6px;
+      }
+      body{
+        /* background-image: url("{% static '/asq_project/images/back2.jpg' %}"); */
+        background-color: #f1f2e3;
+      }
+    </style>
 </head>
 
 <body >
 
 
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
-      <div class="container">
+  <div class="container">
+
+      <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+
         <a class="navbar-brand" href="/q">asq MNNIT</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
+        <p>&nbsp;&nbsp;</p>
         <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-             <li class="nav-item active">
-                <div class="input-group mb-3">
+          <ul class="navbar-nav  mr-auto">
+            <!-- search bar -->
+             <li class="nav-item">
+                <div class="input-group">
                   <input type="text" class="form-control" id="qbox" placeholder="Search">
                   <div class="input-group-append">
-                    <button class="btn btn-success" onclick="open_search()"  type="submit"><i class="fas fa-search"></i></button>
+                    <button class="btn btn-primary" onclick="open_search()"  type="submit"><i class="fas fa-search"></i></button>
                   </div>
                 </div>
             </li>
+            <p>&nbsp;&nbsp;</p>
             <li class="nav-item active">
-              <a class="nav-link" href="/q">Home
+              <a class="nav-link" href="/q"><i class="fas fa-home"> </i> Home
                 <span class="sr-only">(current)</span>
               </a>
             </li>
+            <p>&nbsp;&nbsp;</p>
             {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" data-toggle="modal" data-target="#myModal" onclick="get_new_notification()" style="cursor: pointer;">Notifications</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'user_dashboard' %}">{{ user.username }}!</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-            </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="modal" data-target="#myModal" onclick="get_new_notification()" style="cursor: pointer;"><i class="fas fa-bell"> </i> Notifications</a>
+              </li>
+              <p>&nbsp;&nbsp;</p>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'user_dashboard' %}"><i class="fas fa-user"></i> {{ user.username }}</a>
+              </li>
+              <p>&nbsp;&nbsp;</p>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
+              </li>
+              <p>&nbsp;&nbsp;</p>
              {% else %}
-             <li class="nav-item">
-              <a class="nav-link" href="/accounts/login">Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/accounts/signup">Signup</a>
-            </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/accounts/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+              </li>
+              <p>&nbsp;&nbsp;</p>
+              <li class="nav-item">
+                <a class="nav-link" href="/accounts/signup"><i class="fas fa-user-plus"></i> Signup</a>
+              </li>
+              <p>&nbsp;&nbsp;</p>
             {% endif %}
             <li class="nav-item">
-              <a class="nav-link" href="#">Contact</a>
+              <a class="nav-link" href="#"> <i class="fas fa-address-book"></i> Contact</a>
             </li>
+            <p>&nbsp;&nbsp;</p>
           </ul>
-        </div>
-      </div>
-    </nav>
+        </div>  
+      </nav>
+  </div>
      {% block sidebar %}
     <!-- insert default navigation text for every page -->
     {% endblock %}

@@ -3,10 +3,22 @@
 
 {% block content %}
 
+{% load static %}
+
+{% for file_name in froala_plugins_css %}
+<link href="{% static file_name %}" type="text/css" media="all" rel="stylesheet" />
+{% endfor %}
+
+{% for file_name in froala_plugins_js %}
+<script src="{% static file_name %}"></script>
+{% endfor %}
+
+<script src="{% static 'asq_project/slugify.js' %}"></script>
+
 <script>
     $(function(){
         $('#tags').tagInput({
-            labelClass:"badge badge-success"
+            labelClass:"badge badge-primary"
         });
     });
 
@@ -14,10 +26,109 @@
     {
         $("#id_tags").val($("#resultid").val());
     }
+
+    function showTitleInstructions()
+    {
+        $("#hintstitle").html("<h3>How to ask</h3>");
+        $("#hintsbody").html(
+            "<ul><li style='font-weight:bold'>Is your question about programming?</li><br><li>We prefer questions that can be answered, not just discussed.</li><br><li>Provide details. Share your research.</li><br><li>Try to write a brief title. It should not be more than 250 letters.</li><br></ul>"
+        );
+    }
+
+    function showTagsInstructions() {
+        $("#hintstitle").html("<h3>How to tag</h3>");
+        $("#hintsbody").html(
+            "<ul><li>A tag is a keyword or label that categorizes your question with other, similar questions. Choose one or more (preferable up to 5) tags that will help answerers to find and interpret your question.</li><br><li>use tags that describe things or concepts that are essential, not incidental to your question</li><br><li>favor using existing popular tags</li><br><li> combine multiple words into single-words with hyphens. e.g. django-framework </li><br></ul>"
+        );
+    }
+
+    function showBodyInstructions() {
+        $("#hintstitle").html("<h3>How to format</h3>");
+        $("#hintsbody").html(
+            "<ul><li> put returns between paragraphs</li><br><li><em>_italic_</em> or <strong>**bold**</strong></li><br><li>indent code by 4 spaces</li><br><li>Use editor tools to make your formatting attractive and user friendly</li><br></ul>"
+        );
+    }
 </script>
 
-   <form action="{% url 'asq_app:ask' %}" method="post" >
-   	{% csrf_token %}
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+<div class="container">
+    <h2>Ask a question: </h2>
+    <br>
+    <div class="row">
+        <div class="col-md-8">
+            <!-- tag input field -->
+            <div class="tags" id="tags">
+                <label for="tags" style="font-weight:bold">Tags:</label>
+                <input class="form-control" type="text" onfocusout="addtags()" onfocus="showTagsInstructions()" placeholder="Add tags which are related to your question" class="labelinput">
+                <input type="hidden" id="resultid" value="" name="result">
+            </div>
+
+            <br>
+
+            <form action="{% url 'asq_app:ask' %}" method="post">
+                {% csrf_token %}
+
+                <!-- title -->
+                <div class="form-group">
+                    <label for="title" style="font-weight:bold">Title:</label>
+                    <input type="text" class="form-control" name="title" maxlength="255" required id="id_title" onfocus="showTitleInstructions()" placeholder="Add title to your question. Be specific.">
+                </div>
+
+                <!-- hidden slug field | auto generated slug -->
+                <!-- <input  class="form-control" name="slug" maxlength="255" id="id_slug"> -->
+
+
+                <br>
+
+                <!-- body of the question -->
+                <label for="title" style="font-weight:bold">Body:</label>
+                <textarea name="body" cols="70" rows="20" maxlength="5000" onfocus="showBodyInstructions()" required id="id_commentbody"></textarea>
+                <script>
+                    $(function () {
+                        $('#id_commentbody').on('froalaEditor.focus', showBodyInstructions());
+                        $('#id_commentbody').froalaEditor({ "inlineMode": false, "imageUploadURL": "/froala_editor/image_upload/", "imageUploadParams": { "csrfmiddlewaretoken": getCookie("csrftoken") }, "fileUploadURL": "/froala_editor/file_upload/", "fileUploadParams": { "csrfmiddlewaretoken": getCookie("csrftoken") }, "toolbarInline": false, "image_upload": true, "height": 300, "width": 700 });
+                    });
+                </script>
+
+                <br>
+
+                <!-- hidden tag field -->
+                <input type="hidden" name="tags" id="id_tags">
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+        <!-- side instruction panel -->
+        <div class="col-md-4">
+            <div class="card" style="background-color: rgb(253,254,217)">
+                <div class="card-header" id="hintstitle"><h3>How to ask</h3></div>
+                <div class="card-body" id="hintsbody">
+                    <ul>
+                        <li style='font-weight:bold'>Is your question about programming?</li>
+                        <br>
+                        <li>We prefer questions that can be answered, not just discussed.</li>
+                        <br>
+                        <li>Provide details. Share your research.</li>
+                        <br>
+                        <li>Try to write a brief title. It should not be more than 250 letters.</li>
+                        <br>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+   <!-- <form action="{% url 'asq_app:ask' %}" method="post" >
+   	
     {% for field in askform %}
         {% if field.name == 'tags' %}
             {{field}}
@@ -33,7 +144,7 @@
         <input type="text" onfocusout="addtags()" class="labelinput">
         <input type="hidden" id="resultid" value="" name="result">
     </div>
-    {% load static %}
-    <script src="{% static 'asq_project/slugify.js' %}"></script>
+    
+     -->
     <!-- default content text (typically empty) -->
 {% endblock %}

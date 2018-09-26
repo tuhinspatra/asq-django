@@ -30,43 +30,27 @@
 
             <!-- Author -->
             <p class="lead">
-                by
-                <a href="/u/{{ question.author_id }}">{{ qdata.author }}</a>
+                <small>by <a href="/u/{{ question.author_id }}"> <i class="fas fa-user"></i> {{ qdata.author }}</a></small> | <small style="font-size:14px;" class="text-muted"> <i class="fas fa-clock"></i>  Posted on {{ qdata.created_on }}</small>
             </p>
 
             <hr>
-
-            <!-- Date/Time -->
-            <p>Posted on {{ qdata.created_on }}</p>
-
+            <br>
+            {{ qdata.body | safe }}
+            <br>
+            <br>
+            <div id="taglist"></div>
+            <br>
+            <h4>{{ qdata.comments.count }} Comments</h4>
             <hr>
-
-            <!-- Preview Image -->
-            <!-- <img class="img-fluid rounded" src="http://placehold.it/900x300" alt=""> -->
-
-            <!-- <hr> -->
-
-            <!-- Post Content -->
-            {{ qdata.body }}
+  
+            <!-- comments -->
+            {% for comment in qdata.comments.all %}
+            {{ comment.commentbody | safe }} - <a href="/u/{{ question.author_id }}" style="font-size: 14px">{{ comment.author }}</a>
+            <hr>
+            {% endfor %}
 
             <br>
-            <br>
-            <br>
-            <br>
-
-            <div class="row">
-                <div class="col-md-10 mr-md-auto" >
-                    <hr>
-                    <!-- comments -->
-                    {% for comment in qdata.comments.all %}
-                    <p style="font-size: 14px">{{ comment.commentbody | safe }} - <a href="/u/{{ question.author_id }}" style="font-size: 14px">{{ comment.author }}</a></p>
-                    
-                    <hr>
-                    {% endfor %}
-                </div>   
-            </div>
-
-                <button class="btn btn-primary" onclick="showCommentDialog()">Add comment</button>
+            <button class="btn btn-primary" onclick="showCommentDialog()">Add comment</button>
                 <br>
                 <script>
                     function showCommentDialog() {
@@ -98,8 +82,9 @@
                 </div>
 
             <br>
+            <br>
+            <h4>{{ qdata.answers.count }} Answers</h4>
             <hr>
-
             <div class="row">
                 {% if user.is_authenticated %}
                     {% for answer in qdata.answers.all %}
@@ -110,8 +95,8 @@
                         </div>
                         <div class="col-md-11">
                         {{ answer.body | safe }}
-                        <br>
-                        -<a href="/u/{{ question.author_id }}">{{ answer.author }}</a>
+                        <!-- <br> -->
+                        <a href="/u/{{ question.author_id }}"><i class="fas fa-pen"></i>&nbsp;{{ answer.author }}</a>
                         </div>
                     {% endfor %}
                 {% else %}
@@ -129,8 +114,8 @@
                     </div>
                     <div class="col-md-11">
                         {{ answer.body | safe }}
-                        <br>
-                        -<a href="/u/{{ question.author_id }}">{{ answer.author }}</a>
+                        <!-- <br> -->
+                        <a href="/u/{{ question.author_id }}"><i class="fas fa-pen"></i>&nbsp;{{ answer.author }}</a>
                         <hr>
                     </div>
                     <hr>
@@ -138,6 +123,8 @@
                 {% endif %}
             </div>
             <hr>
+            <br>
+            
             <!-- answer submission form -->
             <button class="btn btn-primary" onclick="showAnswerDialog()">Post your answer</button>
             <br>
@@ -187,16 +174,16 @@
         </div>
 
         <!-- Sidebar Widgets Column -->
+       
         <div class="col-md-4">
-
-            <!-- Search Widget -->
+            
             <div class="card my-4">
                 <h5 class="card-header">Tag Search</h5>
                 <div class="card-body">
                     <div class="input-group">
                         <input type="text" id="tag" onkeyup="tag_fliter()" class="form-control" placeholder="Search by tags...">
                         <span class="input-group-btn">
-                            <button class="btn btn-secondary" onclick="tag_fliter()" type="button">Go!</button>
+                            <button class="btn btn-primary" onclick="tag_fliter()" type="button"><i class="fas fa-search"></i></button>
                         </span>
                     </div>
                 </div>
@@ -349,12 +336,26 @@
             $('#tagcloud').jQCloud(words, {
                 width: 400,
                 height: 400,
-                center: { x: 0.4, y: 0.4 },
+                center: { x: 0.3, y: 0.45 },
                 delay: 40,
                 shape: 'rectangular'
             });
 
         });
+    
+    // showing tags of question
+    $(function(){
+        var qtags='{{ qdata.tags }}';
+        console.log(  );
+        var tags=qtags.split(',');
+        // console.log(tags.length);
+        var txt="<h5><pre>";
+        for(i=0;i<tags.length;i++)
+        txt+=('<span class="badge badge-secondary" style="background-color:hsl(218, 84%, 82%);color:blue;font-weight:100">'+tags[i]+'</span>  ');
+        txt+="</pre></h5>"
+        $("#taglist").html(txt);
+    });
+    // console.log('{{ qdata.tags }}');
 </script>
 
 

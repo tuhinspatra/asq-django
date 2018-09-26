@@ -21,12 +21,21 @@ class SignUpForm(UserCreationForm):
         if User.objects.filter(email=emaill).count()!=0:
             raise forms.ValidationError('a user with this email id already exist!!!')
         return emaill
+    
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.fields['username'].widget.attrs.update({'class':'form-control','placeholder':'Username'})
+        self.fields['first_name'].widget.attrs.update({'class': 'form-control', 'placeholder': 'First name'})
+        self.fields['last_name'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Last name'})
+        self.fields['email'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Email'})
+        self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Password'})
+        self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirm password'})
 
 class AskForm(ModelForm):
     class Meta:
         model = Question
         widgets = {'tags': forms.HiddenInput,}
-        fields = ['title','slug','body','tags']
+        fields = ['title','body','tags']
 
     # def __init__(self,*args,**kwargs):
     #     super().__init__(*args,**kwargs)

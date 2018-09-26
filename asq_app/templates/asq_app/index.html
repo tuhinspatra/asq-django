@@ -15,7 +15,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'vendor/jqcloud.min.css' %}">
 
 {% if latest_question_list %}
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-md-8 col-sm-12">
                 <div class="row">
@@ -24,19 +24,34 @@
                         {% if user.is_authenticated %}
                             <button type="button" style="float:right;margin-top: 24px;" class="btn btn-primary active" onclick="changePage()">Add Question</button>
                         {% else %}
-                            <button type="button" style="float:right;margin-top: 24px;cursor: not-allowed;" class="btn btn-primary disabled" >Add Question</button>
+                            <button type="button" style="float:right;margin-top: 24px;cursor: not-allowed;" class="btn btn-primary disabled" > Login to add Question</button>
                         {% endif %}
                     </div>
                 </div>
                 {% for question in latest_question_list %}
                 <div class="card mb-4">
                     <!-- <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap"> -->
-                    <div class="card-body">
-                        <h5 class="card-title"><a href="{% url 'asq_app:question_detail' question.id question.slug %}">{{ question.title }}</a></h5>
-                        <!-- <br> -->
-                        modified on {{ question.created_on }}
-                        <i class="fas fa-user"></i> by <a href="/u/{{ question.author_id }}">{{ question.author.username }}</a>
-                        <i class="fas fa-pen-alt"></i> {{ question.answers.all.count }} answers
+                    <div class="card-body" style="padding-bottom:0px">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5><i class="fas fa-pen-alt"></i> {{ question.answers.all.count }}</h5> 
+                                        <small class="text-muted">Answers</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <h5 class="card-title"><a href="{% url 'asq_app:question_detail' question.id question.slug %}">{{ question.title }}</a></h5>
+                                <p style="font-size:15px">modified on {{ question.created_on }} &nbsp; <a href="/u/{{ question.author_id }}"> <i class="fas fa-user"></i> {{ question.author.username }}</a></p>
+                            </div>
+                        </div>
+                        <!-- <h5 class="card-title"><a href="{% url 'asq_app:question_detail' question.id question.slug %}">{{ question.title }}</a></h5> -->
+                        
+                        <!-- <i class="fas fa-pen-alt"></i> {{ question.answers.all.count }} answers -->
                     </div>
                 </div>
                 {% endfor %}
@@ -47,13 +62,13 @@
             <div class="col-md-4 col-sm-12">
             
                 <!-- Search Widget -->
-                <div class="card my-4">
+                <div class="card my-4 ">
                     <h5 class="card-header">Tag Search</h5>
                     <div class="card-body">
                         <div class="input-group">
                             <input type="text" id="tag" onkeyup="tag_fliter();" class="form-control" placeholder="Search by tags...">
                             <span class="input-group-btn">
-                                <button class="btn btn-secondary" onclick="tag_fliter()" type="button">Go!</button>
+                                <button class="btn btn-primary" onclick="tag_fliter()" type="button"><i class="fas fa-search"></i></button>
                             </span>
                         </div>
                     </div>
@@ -173,7 +188,7 @@
             $('#tagcloud').jQCloud(words, {
                 width: 400,
                 height: 400,
-                center: {x:0.4,y:0.4},
+                center: { x: 0.4, y: 0.45},
                 delay: 40,
                 shape: 'rectangular'
             });

@@ -63,7 +63,38 @@
           <form class="omb_loginForm" autocomplete="off" action="" method="POST">
             {% csrf_token %}
 
-            <div class="input-group">
+            {% for field in form %}
+              <div class="input-group">
+                <span class="input-group-addon">
+                  {% if field.name == 'username' %}
+                  <i class="fa fa-user"></i>
+                  {% elif field.name == 'first_name' %}
+                  <i class="fa fa-user"></i>
+                  {% elif field.name == 'last_name' %}
+                  <i class="fa fa-user"></i>
+                  {% elif field.name == 'email' %}
+                  <i class="fas fa-at"></i>
+                  {% elif field.name == 'password1' %}
+                  <i class="fa fa-lock"></i>
+                  {% elif field.name == 'password2' %}
+                  <i class="fa fa-lock"></i>
+                  {% endif %}
+                </span>
+                {{field}}
+              </div>
+
+              {% for error in field.errors %}
+              <small style="color: red">{{ error }}</small>
+              <br>
+              {% endfor %}
+              {% if field.help_text %}
+              <small style="color: grey">{{ field.help_text }}</small>
+              <br>
+              <br>
+              {% endif %}
+
+            {% endfor %}
+            <!-- <div class="input-group">
               <span class="input-group-addon"><i class="fa fa-user"></i></span>
               <input type="text" class="form-control" id="id_username" name="username" placeholder="Username" required>
             </div>
@@ -122,7 +153,7 @@
 
             <small style="color: grey">Enter the same password as before, for verification.</small>
             <br>
-            <br>
+            <br> -->
 
             <button class="btn btn-lg btn-primary btn-block" type="submit" value="signup">Signup</button>
             <input type="hidden" name="next" value="{{ next }}" />
@@ -133,15 +164,6 @@
       </div>
 
     </div>
-
-    {% for field in form %}
-    <p>
-      {% for error in field.errors %}
-      <p style="color: red">{{ field.label_tag }} {{ error }}</p>
-      {% endfor %}
-    </p>
-    {% endfor %}
-
 
 </body>
 
