@@ -174,7 +174,7 @@ MEDIA_URL = '/media/'
 # Log email reset mail on console. Can't send email yet as server is not configured.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-MEDIA_ROOT = 'media/'
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 FROALA_UPLOAD_PATH = 'froala_uploads/'
 MEDIA_URL = '/media/'
 

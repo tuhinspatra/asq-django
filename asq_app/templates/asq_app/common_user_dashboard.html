@@ -3,20 +3,16 @@
 {% block content %}
 <br><br>
 
-{% if user %}
 <script type="text/javascript">
     $(document).ready(function () {
        reputation_update();
     });
-    var qwaitage = 0;
-    var answaitage =0;
-
 </script>
 
-
+ {% if user %}
 <div class="container bootstrap snippet">
     <div class="row">
-  		<div class="col-sm-10"><h1>&nbsp;&nbsp;&nbsp;&nbsp;{{user.username}}</h1></div>
+  		<div class="col-sm-10"><h1>{{user.username}}</h1></div>
     	<!-- <div class="col-sm-2"><a href="/users" class="pull-right"><img title="profile image" class="img-circle img-responsive" src="http://www.gravatar.com/a vatar/28fd20ccec6865e2d5f0e1f4446eb7bf?s=100"></a></div>-->
     </div>
     
@@ -28,24 +24,26 @@
         <script type="text/javascript">
           //alert("{{ photo_form }}");
         </script>
-        {% load static %}
-         
-          <img src="{% static 'asq_project/images/user.jpg' %}" width ="250"alt="avatar">
+        {% if photo_form.profile_pic %}
+        <img src="{{ photo_form.profile_pic.url}}" class="avatar rounded-circle img-thumbnail" alt="avatar">
+        {% else %}
+        <h6>Upload a different photo...</h6>
+        
+        {% endif %}
       </div></hr><br>
 
                
-          <div class="card">
-            <div class="card-header">Date Of Joining </div>
-            <div class="card-body">{{user.date_joined | date}}</div>
+          <div class="panel panel-default">
+            <div class="panel-heading">Date Of Joining </div>
+            <div class="panel-body">{{user.date_joined | date}}</div>
           </div>
           
           
           <ul class="list-group">
-            <li class="list-group-item " style="color:white;background-color:blue;">Activity <i class="fa fa-dashboard fa-1x"></i></li>
-            <li class="list-group-item d-flex justify-content-between align-items-center"><span class="pull-left"><strong>Dislikes</strong></span> {{downvote}}</li>
-            <li class="list-group-item d-flex justify-content-between align-items-center"><span class="pull-left"><strong>Likes</strong></span> {{upvote}}</li>
-            <li class="list-group-item d-flex justify-content-between align-items-center"><span class="pull-left"><strong>Posts</strong></span> {{question | length}}</li>
-            <li class="list-group-item d-flex justify-content-between align-items-center"><span class="pull-left"><strong>Reputation</strong></span><span id ="reputation"> </span></li>
+            <li class="list-group-item text-muted">Activity <i class="fa fa-dashboard fa-1x"></i></li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Dislikes</strong></span> {{downvote}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Likes</strong></span> {{upvote}}</li>
+            <li class="list-group-item text-right"><span class="pull-left"><strong>Posts</strong></span> {{question | length}}</li>
            
           </ul> 
           <!--      
@@ -58,7 +56,7 @@
           
         </div><!--/col-3-->
     	<div class="col-sm-9">
-            <ul class="nav nav-pills">
+            <ul class="nav nav-tabs">
                 <li class="active nav-item"><a  class="nav-link" data-toggle="tab" href="#home" onclick="$('#user_status').css('visibility','visible');$('#user_status').html($('#question_asked').html());$('#question_asked').css('display','none');">Question</a></li>
                 <li class="active nav-item"><a class="nav-link" data-toggle="tab"  href="#messages" onclick="$('#user_status').css('visibility','visible');$('#user_status').html($('#answer_given').html());$('#question_asked').css('display','none');">Answer</a></li>
                 <li class="active nav-item"><a  class="nav-link" data-toggle="tab" href="#settings" onclick="$('#user_status').css('visibility','visible');$('#user_status').html($('#comment').html());$('#question_asked').css('display','none');">Comment</a></li>
@@ -67,40 +65,44 @@
 
 
 <div id="user_status" ></div>
-<div id ="question_asked" >
-	 <ul class="list-group">
+<div id ="question_asked" ><h1>question asked</h1>
+	 <table class="table">
 {% for q in question %}
-    <script>
-      qwaitage += 5*{{q.upvotes}} - 2*{{q.downvotes}}+{{q.answers | length }};
-    </script>
-        <li class="list-group-item d-flex justify-content-between align-items-center"><a href="{% url 'asq_app:question_detail' q.id q.slug %}">{{q.title}}</a><span> Posted on - {{q.created_on | date}}</span></li>
-         <!-- <th>Posted on - {{q.created_on | date}}</th> -->
+	<tr  >
+        <th><a href="{% url 'asq_app:question_detail' q.id q.slug %}">{{q.title}}</a></th>
+         <th>Posted on - {{q.created_on | date}}</th>
+    </tr>
 <!-- <h5><a href="{% url 'asq_app:question_detail' q.id q.slug %}">{{q.title}}</a></h5> -->
 {% endfor %}
- </ul>
+ </table>
 </div>
 
-<div id ="answer_given" >
-	 <ul class="list-group">
+<div id ="answer_given" ><h1>Answer given</h1>
+	 <table class="table">
 {% for ans in answer %}
-  <script>
-      answaitage += 10*{{ans.upvotes}} - 2*{{ans.downvotes}};
-    </script>
-        <li class ="list-group-item   align-items-center"><a href="{% url 'asq_app:question_detail' ans.question.id ans.question.slug %}">{{ans | safe }}</a></li>
+
+<tr  >
+	 <th>.</th>
+        <th><a href="{% url 'asq_app:question_detail' ans.question.id ans.question.slug %}">{{ans | safe }}</a></th>
        
+    </tr>
 
 {% endfor %}
-</ul>
+</table>
 </div>
-<div id ="comment" >
-	 <ul class="list-group">
+<div id ="comment" ><h1>Comment </h1>
+	 <table class="table">
 
 {% for c in comment %}
-
-        <li class="list-group-item d-flex justify-content-between align-items-center"><a href="{% url 'asq_app:question_detail' c.question.id c.question.slug %}">{{c | safe }}</a></li>
+<tr  >
+	 <th></th>
+        <th><a href="{% url 'asq_app:question_detail' c.question.id c.question.slug %}">{{c | safe }}</a></th>
+       
+      
+    </tr>
 
 {% endfor %}
-</ul>
+</table>
 </div>
 </div>
 
@@ -110,8 +112,8 @@
 <script>
 
   function reputation_update(){
-  
-     var reputation = qwaitage+answaitage + {{upvote}};
+    
+     var reputation =10;
      $.ajax({
         url: '/q/reputation_update/',
         data: {
@@ -120,8 +122,7 @@
         },
         dataType: 'json',
         success: function (data) {
-
-          $("#reputation").html(reputation);
+         alert("successfully");
    }
       });
    
@@ -161,7 +162,7 @@
     }
 
     </script>
-{% else %}
-    <p>No User</p>
+{% else%}
+<p>No USer Exist</p>
 {% endif %}
 {% endblock %}

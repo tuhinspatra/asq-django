@@ -4,19 +4,19 @@ from django.urls import reverse
 from django.views import generic
 from django.contrib.auth.models import User
 from .forms import AskForm ,AnsForm,CommentForm
-from .models import Answer, Question,UserVoteDetail,QComment,TagSearch,Notification,StandardTags 
+from .models import Answer, Question,UserVoteDetail,QComment,TagSearch,Notification,StandardTags,UserDetails
 import json
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 from django.core import serializers
-from .forms import SignUpForm
+from .forms import SignUpForm,UserPhotoForm
 from . import views
 from django.conf import settings
 from haystack.query import SearchQuerySet
 from haystack.inputs import BaseInput, Clean
 from django.db.models import Count
 from django.db.models import Q
-
+from django.contrib.auth.decorators import login_required
 
 class IndexView(generic.ListView):
     template_name = 'asq_app/index.html'
@@ -202,15 +202,15 @@ def question_downvote_route(request):
     except UserVoteDetail.DoesNotExist:
         status=None             
     if status != None:
-        if not status.downvote:
-            question.upvotes-=1
+        if not status.upvote:
+            question.downvotes-=1
             question.save()
             status.delete()
     else:
-        question.upvotes += 1;
-        UserVoteDetail.objects.create(answer=0,question=question_id,user=request.user,upvote=True)
+        question.downvotes += 1;
+        UserVoteDetail.objects.create(answer=0,question=question_id,user=request.user,downvote=True)
         question.save()
-    qdata = {'votes':question.upvotes}
+    qdata = {'votes':question.downvotes}
     return JsonResponse(qdata)
 
 def downvoter(request):
@@ -234,6 +234,7 @@ def downvoter(request):
     qdata = {'votes':answer.downvotes}
     return JsonResponse(qdata)	
 
+
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -255,7 +256,124 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'asq_app/signup.html', {'form': form})
 
+def reputation_update(request):
+    user = request.GET.get('user')
+    print(user)
+    reputation = request.GET.get('reputation')
+    try:
+        userdetails = UserDetails.objects.get(user=user)
+        userdetails.reputation = reputation
+        userdetails.save()
+        print("updated")
+    except UserDetails.DoesNotExist:
+        print("created")
+        user_model=User.objects.get(id=user)
+        userdetails = UserDetails.objects.create(user=user_model,profile_pic='',reputation=reputation)
+        userdetails.save()
+    data={}
+    return JsonResponse(data)
+        
+
+
+
+def notification_updates(request):
+    notification = []
+    isans =[]
+    author = []
+    try:
+        
+        for notify in Notification.objects.filter(received_by=request.user,new_notification=True):
+            if notify.isans == True:
+                notification.append(notify.question)
+            elif notify.iscomment == True:
+                isans.append(notify.question) 
+            print(notify.question.author.id)
+            author.append(User.objects.get(id=notify.question.author.id).username) 
+            print(author)
+    except Notification.DoesNotExist:
+        notification = []
+    # print(notification)    
+    #data = {notification:notification}
+    notify_serialized = serializers.serialize('json',notification)
+    notify_serialize = serializers.serialize('json',isans)
+   # author_list = serializers.serialize('json',author)
+
+    return JsonResponse({'author':author,'notify_serialized':notify_serialized,'notify_serialize':notify_serialize},safe=False)            
+
+def delete_comment_notification(request):
+    notification_id = request.GET.get('qid')
+    for notify in Notification.objects.filter(question_id=notification_id,iscomment=True,new_notification=True):
+        notify.new_notification=False
+        notify.save()
+
+    data={'status':"successfully deleted"}
+    return JsonResponse(data)            
+
+
+
+def delete_answer_notification(request):
+    notification_id = request.GET.get('qid')
+    for notify in Notification.objects.filter(question_id=notification_id,isans=True,new_notification=True):
+        notify.new_notification=False
+        notify.save()
+
+    data={'status':"successfully deleted"}
+    return JsonResponse(data)            
+
+
+class CustomContain(BaseInput):
+    input_type_name = 'custom_contain'
+    def prepare(self, query_obj):
+        query_string = super(CustomContain, self).prepare(query_obj)
+        query_string = query_obj.clean(query_string)
+        exact_bits = [Clean(bit).prepare(query_obj)
+                    for bit in query_string.split(' ') if bit]
+        query_string = u' '.join(exact_bits)
+        return u'*{}*'.format(query_string)
+
+
+# Usage:
+
+
+def search_titles(request):
+    query = request.GET.get('q', '')
+    if query == '':
+        return JsonResponse({})
+    sqs = SearchQuerySet()
+    # results_custom = SearchQuerySet().filter(content=CustomContain(query))
+    # r2 = SearchQuerySet().filter(content=query)
+    results = SearchQuerySet().autocomplete(content_auto=query)
+    # spelling = sqs.spelling_suggestion(query)
+    # results = serializers.serialize('json', results)
+    response = []
+    for x in results:
+        obj = {
+            'title': x.object.title,
+            'body': x.object.body[:30],
+            'website-link': reverse('asq_app:question_detail', kwargs={'qid':x.object.id,'slug': x.object.slug})
+        }
+        response.append(obj)
+
+    print(response)
+    return JsonResponse(response, safe=False)
+
+
+#@login_required(login_url="/accounts/")
+
 def user_dashboard(request):
+    # photo_form = UserPhotoForm()
+    # if request.method == 'POST':
+    #     photo_form = UserPhotoForm(request.POST, request.FILES)
+    #     print(photo_form.clean_image)
+    #     if photo_form.is_valid():
+    #         if photo_form.clean_image != 0:
+    #             instance = photo_form.save(commit=False)
+    #             instance.user = request.user
+    #             instance.save()
+    #             photo_form = instance
+    #         else:
+    #             photo_form = UserDetails.objects.get(user=request.user)
+    #         print("okk done")
     user = request.user.id
     upvote = 0
     downvote = 0
@@ -295,6 +413,7 @@ def user_dashboard(request):
     #print(upvote)
     return render(request,'asq_app/user_dashboard.html',data)    
 
+
 def common_user_dashboard(request,uid):
     upvote = 0
     downvote = 0
@@ -330,6 +449,7 @@ def common_user_dashboard(request,uid):
     'user':user,
     'upvote':upvote,
     'downvote':downvote
+  
     }
     return render(request,'asq_app/user_dashboard.html',data)    
 

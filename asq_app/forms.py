@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.db import models
 from django.forms import ModelForm
-from .models import Question,Answer,QComment
+from .models import Question,Answer,QComment,UserDetails
 from froala_editor.widgets import FroalaEditor
 from django.views.generic.edit import FormView
 
@@ -68,5 +68,11 @@ class CommentForm(ModelForm):
         model = QComment
         fields = ['commentbody']        
 		
+class UserPhotoForm(ModelForm):
+    class Meta:
+        model = UserDetails
+        fields = ['profile_pic']
+    
+
 
 

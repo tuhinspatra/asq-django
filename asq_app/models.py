@@ -64,7 +64,7 @@ class Answer(models.Model):
         verbose_name_plural = 'answers'
 
     def __str__(self):
-        return self.body[:20]
+        return self.body[:200]
     
     def save(self, *args, **kwargs):
         self.last_modified_on = timezone.now()
@@ -86,7 +86,7 @@ class QComment(models.Model):
     commentbody = models.TextField(max_length = 5000)
     
     def __str__(self):
-        return self.commentbody[:20]
+        return self.commentbody[:80]
 
 
 class UserDashBoard(models.Model):
@@ -107,6 +107,15 @@ class TagSearch(models.Model):
     def __str__(self):
         return self.tag
 
+
+class UserDetails(models.Model):
+    user = models.ForeignKey('auth.User',on_delete=models.CASCADE)
+    profile_pic = models.ImageField(default=0, blank=True)
+    reputation = models.IntegerField(default=0)
+
+
+    def __str__(self):
+        return self.user.username
 
 class Notification(models.Model):
     created_by = models.ForeignKey('auth.User',on_delete=models.CASCADE,related_name='created_by') 

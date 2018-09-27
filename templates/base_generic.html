@@ -119,7 +119,7 @@
               <p>&nbsp;&nbsp;</p>
             {% endif %}
             <li class="nav-item">
-              <a class="nav-link" href="#"> <i class="fas fa-address-book"></i> Contact</a>
+              <a class="nav-link" href="#" data-toggle="modal" data-target="#myModalcontact"> <i class="fas fa-address-book"></i> Contact</a>
             </li>
             <p>&nbsp;&nbsp;</p>
           </ul>
@@ -134,7 +134,8 @@
     <!-- default content text (typically empty) -->
     {% endblock %}
 
-    <footer ><hr>(c) Team Django Unchained Webster 2018 </footer>
+    <footer >     
+      <hr><br><br><div  style="background-color:black;color:white  "><br><br><center>(c) 2018 Team django-unchained Webster 2018</center> <br></div></footer>
  <!-- 
     <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
@@ -150,20 +151,43 @@
       <div class="modal-header">
         <h4 class="modal-title">New Notifications</h4>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" id="notificationarea">
         <p></p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal" onclick='$(".modal-body").text("");' >Close</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick='$(".modal-body").text("");' >Close</button>
       </div>
     </div>
 
   </div>
 </div>
 
+<div id="myModalcontact" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Django-Unchained</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+          <h5>Our Team</h5><br><br><span>Tuhin Subhra Patra</span><br>
+        <span>Milan Bavishi</span><br>
+        <span>Jugta Ram</span><br></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick='$(".modal-body").text("");' >Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
   <script>
 function get_new_notification(){
-    $(".modal-body").text("");
+    $("#notificationarea").text("");
    // console.log("fg");
     var tag= $("#tag").val();
     $.ajax({
@@ -175,15 +199,17 @@ function get_new_notification(){
             if(data){
               received_ans=JSON.parse(data.notify_serialized);
                console.log(received_ans);
+               console.log(data);
                received_comment=JSON.parse(data.notify_serialize);
                console.log(received_comment);
+               //author_list=JSON.parse(data);
                for(var i=0;i<received_ans.length;i++)
               if(received_ans)
-               $(".modal-body").append("user <a href=/u/"+received_ans[i].fields.author+">see profile</a>commented on your question<a href="+'/q/'+received_ans[i].pk+"/"+received_ans[i].fields.slug+" onclick='notification_answer_update("+received_ans[i].pk+");'"+">"+received_ans[i].fields.title+"</a><br>");
+               $(".modal-body").append("user <a href=/u/"+received_ans[i].fields.author+">"+data.author[i]+"</a>commented on your question<a href="+'/q/'+received_ans[i].pk+"/"+received_ans[i].fields.slug+" onclick='notification_answer_update("+received_ans[i].pk+");'"+">"+received_ans[i].fields.title+"</a><br>");
                // ///alert("new notification received");
                for(var i=0;i<received_comment.length;i++)
                if(received_comment)
-               $(".modal-body").append("user <a href=/u/"+received_comment[i].fields.author+">see profile</a> answered your question <a href="+'/q/'+received_comment[i].pk+"/"+received_comment[i].fields.slug+" onclick='notification_comment_update("+received_comment[i].pk+");'"+">"+received_comment[i].fields.title+"</a><br>");
+               $(".modal-body").append("user <a href=/u/"+received_comment[i].fields.author+">"+data.author[i]+"</a> answered your question <a href="+'/q/'+received_comment[i].pk+"/"+received_comment[i].fields.slug+" onclick='notification_comment_update("+received_comment[i].pk+");'"+">"+received_comment[i].fields.title+"</a><br>");
                // ///alert("new notification received");
 
                }
