@@ -4,6 +4,9 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-blog-home/blob/master/LICENSE)
  */
 
+
+
+
 body {
   padding-top: 54px;
 }
@@ -19,7 +22,6 @@ footer {
    padding-top:1000px;
 
 }
-
 
 #question_asked{
  display:block; 
