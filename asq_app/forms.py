@@ -45,7 +45,6 @@ class AskForm(ModelForm):
         self.fields['body'].widget.attrs.update({'cols': '60', 'rows':'25','id':'id_commentbody'})
         
 
-
 class AnsForm(ModelForm):
     body = forms.CharField(widget=FroalaEditor(options={
         'toolbarInline': False,

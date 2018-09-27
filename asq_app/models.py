@@ -5,15 +5,12 @@ from django.utils import timezone
 from django import forms
 from django.urls import reverse
 
-# Create your models here.
-
 
 class Question(models.Model):
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     author_name = models.CharField('author_name', max_length=1000, default='')
     title = models.CharField('title', max_length=255)
     slug = models.SlugField(unique=True, max_length=255)
-    # tags = models.CharField('tags',widget=forms.TextInput(attrs={'type':'text','class':'labelinput'}),max_length=1000)
     tags = models.CharField('tags',max_length=1000,default='')
     body = models.TextField('body', max_length=5000)
     upvotes = models.IntegerField(default=0)
@@ -30,7 +27,7 @@ class Question(models.Model):
         verbose_name = 'question'
         verbose_name_plural = 'questions'
 
-    def __str__(self):
+    def __str__(self):  
         return self.title
 
     def save(self, *args, **kwargs):
@@ -64,7 +61,7 @@ class Answer(models.Model):
         verbose_name_plural = 'answers'
 
     def __str__(self):
-        return self.body[:200]
+        return self.body[:20]
     
     def save(self, *args, **kwargs):
         self.last_modified_on = timezone.now()
@@ -86,7 +83,7 @@ class QComment(models.Model):
     commentbody = models.TextField(max_length = 5000)
     
     def __str__(self):
-        return self.commentbody[:80]
+        return self.commentbody[:20]
 
 
 class UserDashBoard(models.Model):

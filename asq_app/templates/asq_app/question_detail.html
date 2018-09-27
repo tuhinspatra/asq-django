@@ -111,15 +111,24 @@
                 {% if user.is_authenticated %}
                     {% for answer in qdata.answers.all %}
                         <div class="col-md-1">
-                            <h2><i class="fas fa-angle-up" id="up{{answer.id}}" style="cursor:pointer" onclick="upvote_update({{ answer.id }},{{ qdata.id }});"></i> <span id="uvcount">{{ answer.upvotes }}</span> </h2>
+                            <h2><i class="fas fa-angle-up" id="up{{answer.id}}" style="cursor:pointer" onclick="upvote_update({{ answer.id }},{{ qdata.id }});"></i> <span id="uvcount{{answer.id}}">{{ answer.upvotes }}</span> </h2>
                             <!-- <br> -->
-                            <h2><span id="dvcount">{{ answer.downvotes }}</span><i class="fas fa-angle-down" id="down{{answer.id}}" style="cursor:pointer" onclick="downvote_update({{answer.id}},{{qdata.id}})"></i></h2>
+                            <h2><span id="dvcount{{answer.id}}">{{ answer.downvotes }}</span><i class="fas fa-angle-down" id="down{{answer.id}}" style="cursor:pointer" onclick="downvote_update({{answer.id}},{{qdata.id}})"></i></h2>
                         </div>
                         <div class="col-md-11">
                         {{ answer.body | safe }}
                         <!-- <br> -->
                         <a href="/u/{{ question.author_id }}"><i class="fas fa-pen"></i>&nbsp;{{ answer.author }}</a>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <hr>
                         </div>
+                        <br>
+                        <br>
+                        <hr>
                     {% endfor %}
                 {% else %}
                     {% for answer in qdata.answers.all %}
@@ -138,8 +147,16 @@
                         {{ answer.body | safe }}
                         <!-- <br> -->
                         <a href="/u/{{ question.author_id }}"><i class="fas fa-pen"></i>&nbsp;{{ answer.author }}</a>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
                         <hr>
+                        
                     </div>
+                    <br>
+                    <br>
                     <hr>
                     {% endfor %}
                 {% endif %}
@@ -165,7 +182,7 @@
             <div style="display:none" class="card my-4" id="myansDIV">
                 <h5 class="card-header">Post an answer:</h5>
                 <div class="card-body">
-                    {% if user.is_authenticated%}
+                    {% if user.is_authenticated %}
                         <form method="post">
                             {% csrf_token %}
                             {{ ansform }}
@@ -201,7 +218,7 @@
         <div class="col-md-4">
             
             <div class="card my-4">
-                <h5 class="card-header">Tag Search</h5>
+                <h5 class="card-header bg-primary" style="color:white">Tag Search</h5>
                 <div class="card-body">
                     <div class="input-group">
                         <input type="text" id="tag" onkeyup="tag_fliter()" class="form-control" placeholder="Search by tags...">
@@ -215,7 +232,7 @@
 
             <!-- Categories Widget -->
             <div class="card my-4">
-                <h5 class="card-header">Top tags</h5>
+                <h5 class="card-header bg-primary" style="color:white">Top tags</h5>
                 <div class="card-body">
                     <div id="tagcloud">
                     
@@ -225,10 +242,9 @@
 
             <!-- Side Widget -->
             <div class="card my-4">
-                <h5 class="card-header">Related Question</h5>
+                <h5 class="card-header bg-primary" style="color:white">Related Question</h5>
                 <div class="card-body" id ="related_content" >
-                    You can put anything you want inside of these side widgets. They are easy to use, and feature the
-                    new Bootstrap 4 card containers!
+                    
                 </div>
             </div>
 
@@ -333,7 +349,7 @@
 	function upvote_update(answer_id,question_id){
     
     var btn = $("#up"+answer_id);
-    var res = $("#uvcount");
+    var res = $("#uvcount"+ answer_id);
     $.ajax({
         url: '/q/upvote_route/',
         data: {
@@ -349,7 +365,7 @@
 	}
 	function downvote_update(answer_id,question_id){
     var btn = $("#down"+answer_id);
-    var res = $("#dvcount");
+    var res = $("#dvcount" + answer_id);
     $.ajax({
         url: '/q/downvote_route/',
         data: {

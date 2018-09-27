@@ -61,6 +61,7 @@ def detail(request,qid,slug):
     return render(request, 'asq_app/question_detail.html', {'qdata': qdata, 'commentform': commentform, 'ansform': ansform, 'froala_plugins_js': settings.FROALA_PLUGINS_JS_FILES,
                                                             'froala_plugins_css': settings.FROALA_PLUGINS_CSS_FILES})
 
+@login_required
 def askForm(request):
     if request.method == 'POST':
         askform = AskForm(request.POST)
@@ -75,6 +76,7 @@ def askForm(request):
     else:
     	askform = AskForm()
     return render(request, 'asq_app/askform.html', {'askform': askform,'froala_plugins_js': settings.FROALA_PLUGINS_JS_FILES,'froala_plugins_css': settings.FROALA_PLUGINS_CSS_FILES})
+
 
 def ansForm(request):
         if request.method == 'POST':
@@ -418,10 +420,7 @@ def common_user_dashboard(request,uid):
     upvote = 0
     downvote = 0
     try:
-        if request.user.id:
-            user = User.objects.get(id=uid)
-        else:
-            user= None;
+        user = User.objects.get(id=uid)
     except User.DoesNotExist:
         user = None
     question = []

@@ -25,7 +25,7 @@
                         {% if user.is_authenticated %}
                             <button type="button" style="float:right;margin-top: 24px;" class="btn btn-primary active" onclick="changePage()">Add Question</button>
                         {% else %}
-                            <button type="button" style="float:right;margin-top: 24px;cursor: not-allowed;" class="btn btn-primary disabled" > Login to add Question</button>
+                            <button type="button" style="float:right;margin-top: 24px" class="btn btn-primary" onclick="changePage()" > Add Question</button>
                         {% endif %}
                     </div>
                 </div>
@@ -69,7 +69,7 @@
             
                 <!-- Search Widget -->
                 <div class="card my-4 ">
-                    <h5 class="card-header">Tag Search</h5>
+                    <h5 class="card-header bg-primary" style="color:white">Tag Search</h5>
                     <div class="card-body">
                         <div class="input-group">
                             <input type="text" id="tag" onkeyup="tag_fliter();" class="form-control" placeholder="Search by tags...">
@@ -82,8 +82,8 @@
                 </div>
             
                 <!-- Categories Widget -->
-                <div class="card my-4">
-                    <h5 class="card-header">Top Tags</h5>
+                <div class="card my-4"> 
+                    <h5 class="card-header bg-primary" style="color:white">Top Tags</h5>
                     <div class="card-body">
                         <div id="tagcloud">
                             
@@ -94,7 +94,7 @@
 
                 <!-- Side Widget -->
             <div class="card my-4">
-                <h5 class="card-header">Top Question</h5>
+                <h5 class="card-header bg-primary" style="color:white" >Top Questions</h5>
                 <div class="card-body" id ="top_question_content" >
                     You can put anything you want insidex of these side widgets. They are easy to use, and feature the
                     new Bootstrap 4 card containers!

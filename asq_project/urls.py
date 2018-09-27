@@ -27,6 +27,10 @@ urlpatterns = [
 ]
 
 urlpatterns += [
+    path('', RedirectView.as_view(url='/q/')),
+]
+
+urlpatterns += [
     path('q/', include('asq_app.urls')),
     url(r'^u/$',views.user_dashboard,name='user_dashboard'),
     url(r'^auth/', include('social_django.urls', namespace='social')),  # <- Here
@@ -35,9 +39,6 @@ urlpatterns += [
     url(r'^froala_editor/', include('froala_editor.urls')),
 ]
 
-urlpatterns += [
-    path('', RedirectView.as_view(url='/q/')),
-]
 
 #Add Django site authentication urls (for login, logout, password management)
 urlpatterns += [
