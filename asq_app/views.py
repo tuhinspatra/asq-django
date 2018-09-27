@@ -418,7 +418,10 @@ def common_user_dashboard(request,uid):
     upvote = 0
     downvote = 0
     try:
-        user = User.objects.get(id=uid)
+        if request.user.id:
+            user = User.objects.get(id=uid)
+        else:
+            user= None;
     except User.DoesNotExist:
         user = None
     question = []

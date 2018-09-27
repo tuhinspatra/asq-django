@@ -3,7 +3,7 @@
 {% block content %}
 <br><br>
 
-{% if user %}
+{% if user.is_authenticated %}
 <script type="text/javascript">
     $(document).ready(function () {
        reputation_update();
@@ -162,6 +162,6 @@
 
     </script>
 {% else %}
-    <p>No User</p>
+    <h2>Please Register yourself to see other's profile</h2>
 {% endif %}
 {% endblock %}

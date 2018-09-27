@@ -200,7 +200,7 @@ svg, path, g { transition: all 300ms ease-in-out; }
               </li>
               <p>&nbsp;&nbsp;</p>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'user_dashboard' %}"><i class="fas fa-user"></i> {{ user.username }}</a>
+                <a class="nav-link" href="{% url 'user_dashboard' %}"><i class="fas fa-user"></i> {{ request.user.username }}</a>
               </li>
               <p>&nbsp;&nbsp;</p>
               <li class="nav-item">
